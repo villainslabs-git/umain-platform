@@ -1,11 +1,12 @@
 // UMAIN Database Queries
 import { createServerFn } from "@tanstack/react-start";
 import { bindings } from "./bindings.server";
+import { withSqlTag } from "./d1-sql";
 
 function db() {
   const { DB } = bindings();
   if (!DB) throw new Error("D1 binding not configured");
-  return DB as any;
+  return withSqlTag(DB);
 }
 
 // ============================================================
@@ -158,14 +159,28 @@ export const updateIdentity = createServerFn({ method: "POST" })
   .validator((data: { id: string; nombre?: string; tier?: string; agencia_id?: string; contrato_ref?: string; contacto_aprobacion?: string }) => data)
   .handler(async ({ data }) => {
     const d = db();
+    // SQL dinamico con placeholders y bind: los valores nunca se interpolan en el string.
     const sets: string[] = [];
-    if (data.nombre !== undefined) sets.push(`nombre = '${data.nombre.replace(/'/g, "''")}'`);
-    if (data.tier !== undefined) sets.push(`tier = '${data.tier}'`);
-    if (data.agencia_id !== undefined) sets.push(`agencia_id = ${data.agencia_id ? `'${data.agencia_id.replace(/'/g, "''")}'` : 'NULL'}`);
-    if (data.contrato_ref !== undefined) sets.push(`contrato_ref = ${data.contrato_ref ? `'${data.contrato_ref.replace(/'/g, "''")}'` : 'NULL'}`);
-    if (data.contacto_aprobacion !== undefined) sets.push(`contacto_aprobacion = ${data.contacto_aprobacion ? `'${data.contacto_aprobacion.replace(/'/g, "''")}'` : 'NULL'}`);
+    const params: unknown[] = [];
+    const campos: Array<[string, string | undefined]> = [
+      ['nombre', data.nombre],
+      ['tier', data.tier],
+      ['agencia_id', data.agencia_id],
+      ['contrato_ref', data.contrato_ref],
+      ['contacto_aprobacion', data.contacto_aprobacion],
+    ];
+    for (const [campo, valor] of campos) {
+      if (valor !== undefined) {
+        sets.push(`${campo} = ?`);
+        params.push(valor === '' ? null : valor);
+      }
+    }
     if (sets.length === 0) return { success: false, error: 'Sin campos para actualizar' };
-    await d.sql(`UPDATE identities SET ${sets.join(', ')}, updated_at = datetime('now') WHERE id = ${data.id}`).run();
+    params.push(data.id);
+    await d.raw
+      .prepare(`UPDATE identities SET ${sets.join(', ')}, updated_at = datetime('now') WHERE id = ?`)
+      .bind(...params)
+      .run();
     return { success: true };
   });
 

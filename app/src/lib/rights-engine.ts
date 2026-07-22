@@ -5,6 +5,7 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { bindings } from "./bindings.server";
+import { withSqlTag } from "./d1-sql";
 
 // ============================================================
 // TIPOS PUBLICOS
@@ -43,7 +44,7 @@ export interface ConsentGateResponse {
 function getDB() {
   const { DB } = bindings();
   if (!DB) throw new Error("RIGHTS_ENGINE: D1 binding not available");
-  return DB as any;
+  return withSqlTag(DB);
 }
 
 function generateHash(data: string): string {
