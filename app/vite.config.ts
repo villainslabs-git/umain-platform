@@ -27,7 +27,9 @@ export default defineConfig(() => {
         },
       }),
       tanstackStart({
-        server: { entry: "server" },
+        server: {
+          preset: "cloudflare-pages",
+        },
       }),
       react(),
       tailwindcss(),
