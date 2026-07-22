@@ -6,7 +6,7 @@ pages_build_output_dir = "./dist/client"
 
 [assets]
 directory = "./dist/client"
-binding = "ASSETS"
+binding = "STATIC"
 not_found_handling = "none"
 
 [[d1_databases]]
