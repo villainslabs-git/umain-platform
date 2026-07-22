@@ -368,7 +368,7 @@ function NewTalentPage() {
                 </div>
               </div>
 
-              <div style={{ fontSize: '11px', color: 'var(--color-umain-text-dim') }}>
+              <div style={{ fontSize: '11px', color: 'var(--color-umain-text-dim)' }}>
                 Las fotos se pueden subir después de crear el talento. El entrenamiento del Soul ID toma ~5 minutos.
               </div>
             </div>
