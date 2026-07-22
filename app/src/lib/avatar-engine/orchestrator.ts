@@ -112,7 +112,7 @@ export class AvatarOrchestrator {
       max_credits: request.config?.max_credits || 200,
       priority: request.config?.priority || 'normal',
       auto_correct: request.config?.auto_correct !== false,
-      rreferences: {
+      references: {
         outfits: request.references.outfits?.map(o => o.id) || [],
         environments: request.references.environments?.map(e => e.id) || [],
         props: request.references.props?.map(p => p.id) || [],
