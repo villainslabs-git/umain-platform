@@ -163,7 +163,7 @@ function IdentityDetailPage() {
                   <InfoRow label="Contacto" value={identity.contacto_aprobacion ?? 'No configurado'} />
                   <InfoRow label="Creado" value={new Date(identity.created_at).toLocaleDateString()} />
                   <div style={{marginTop:'0.75rem', display:'flex', gap:'0.5rem'}}>
-                    <Link to="/identities/$id/avatar/" params={{id: identity.id}} className="umain-button-primary" style={{fontSize:'0.75rem'}}>
+                    <Link to="/identities/$id/avatar" params={{id: identity.id}} className="umain-button-primary" style={{fontSize:'0.75rem'}}>
                       Crear Avatar
                     </Link>
                   </div>

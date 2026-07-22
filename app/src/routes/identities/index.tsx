@@ -49,7 +49,7 @@ function IdentitiesPage() {
       if (result.success) {
         setShowForm(false);
         // Redirect to avatar creation page for this new talent
-        navigate({ to: '/identities/$id/avatar/', params: { id: result.id } });
+        navigate({ to: '/identities/$id/avatar', params: { id: result.id } });
       }
     } catch (err: any) {
       setError(err.message || 'Error al crear el talento');

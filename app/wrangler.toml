@@ -17,6 +17,5 @@ database_id = "6bb4bfd3-b8dc-413f-9908-011307f3f3e0"
 binding = "STORAGE"
 bucket_name = "umain-identity-packs"
 
-pages_build_output_dir = "dist"
 
 # Se agrego la sección de [[r2_buckets]] activación de R2
