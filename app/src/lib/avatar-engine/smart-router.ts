@@ -309,7 +309,8 @@ export class SmartRouter {
     
     const healthMap = new Map<string, ProviderHealth>();
     
-    for (const p of (providers.results || [])) {
+    for (const row of (providers.results || [])) {
+      const p = row as any;
       const successRate = p.total_calls > 0 
         ? 1 - (p.total_failures / p.total_calls)
         : 0.5;

@@ -153,7 +153,8 @@ export class DBManager {
     `).bind(batchId).all();
     
     const statusCounts: Record<string, number> = {};
-    for (const t of (tasks.results || [])) {
+    for (const row of (tasks.results || [])) {
+      const t = row as any;
       statusCounts[t.status] = t.count;
     }
     

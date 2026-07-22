@@ -455,7 +455,11 @@ function ProvidersPage() {
               } else {
                 setProviders(prev => [...prev, { 
                   id: `provider-${Date.now()}`, 
-                  ...data,
+                  nombre: data.nombre || '',
+                  tipo: data.tipo || 'custom',
+                  api_url: data.api_url || '',
+                  capabilities: data.capabilities || '{}',
+                  priority: data.priority || 1,
                   estado: 'activo',
                   health_score: 0,
                   avg_latency_ms: 0,

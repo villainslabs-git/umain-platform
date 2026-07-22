@@ -112,7 +112,11 @@ export class AvatarOrchestrator {
       max_credits: request.config?.max_credits || 200,
       priority: request.config?.priority || 'normal',
       auto_correct: request.config?.auto_correct !== false,
-      references: request.references,
+      rreferences: {
+        outfits: request.references.outfits?.map(o => o.id) || [],
+        environments: request.references.environments?.map(e => e.id) || [],
+        props: request.references.props?.map(p => p.id) || [],
+      },
     });
     
     console.log(`[ORCHESTRATOR] Batch ${batchId} creado para ${request.identity_id}`);
@@ -145,7 +149,7 @@ export class AvatarOrchestrator {
         soulId = soulIdResult.output_url; // El reference_id
         await this.dbManager.updateTaskStatus(soulIdTask, 'completed', soulIdResult);
       } else {
-        throw new Error(`Soul ID training failed: ${soulIdResult.error}`);
+        throw new Error(`Soul ID training failed: ${(soulIdResult as any).error || 'unknown 	error'}`);
       }
       
       // 2b. Character Element (para video)
