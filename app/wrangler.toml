@@ -1,4 +1,4 @@
-name = "umain-platform"
+name = "umain-platform-v2"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
 main = "dist/server/server.js"
