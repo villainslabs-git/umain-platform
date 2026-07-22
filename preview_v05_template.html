@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UMAIN · v05 · Landing + 3 Portales + Perfiles navegables</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62.5..125,100..900&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#0B0B0B;--bg:#FFF;--bg-alt:#F6F6F5;--bg-deep:#EBEBEA;--fg:#0B0B0B;--fg-muted:#4B4B4A;--fg-soft:#7C7C7B;--border:rgba(11,11,11,.18);--border-soft:rgba(11,11,11,.08);--green:#4A7A52;--yellow:#B89A4A;--red:#A84A4A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Archivo','Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+em{font-style:normal;font-weight:450}a{cursor:pointer}
+.view{display:none}.view.active{display:block}
+.landing{min-height:100vh;display:flex;flex-direction:column}
+.landing-nav{display:flex;justify-content:space-between;align-items:center;padding:1.75rem 3rem;border-bottom:.5px solid var(--border)}
+.logo-word{font-family:'Archivo',sans-serif;font-weight:650;font-stretch:122%;font-size:1.45rem;letter-spacing:.38em;margin-right:-.38em;text-transform:uppercase;color:var(--fg);line-height:1;cursor:pointer}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-link{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg-muted);text-decoration:none}.nav-link:hover{color:var(--fg)}
+.nav-cta{padding:.5rem 1.25rem;border:.5px solid var(--fg);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--fg);background:transparent;cursor:pointer;font-family:inherit}.nav-cta:hover{background:var(--fg);color:var(--bg)}
+.hero{display:grid;grid-template-columns:1fr 1fr;flex:1;min-height:calc(100vh - 70px)}
+.hero-content{padding:5rem 4rem;display:flex;flex-direction:column;justify-content:center}
+.hero-eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:.3em;color:var(--fg-soft);margin-bottom:2rem}
+.hero-title{font-family:'Archivo',sans-serif;font-size:clamp(2.8rem,5vw,4.2rem);font-weight:300;line-height:1.05;letter-spacing:-.02em;max-width:580px;margin-bottom:2rem}
+.hero-title strong{font-weight:650;font-stretch:122%}
+.hero-sub{font-size:14px;color:var(--fg-muted);max-width:440px;line-height:1.75;margin-bottom:2.5rem}
+.hero-actions{display:flex;gap:1rem;align-items:center}
+.btn-hero{padding:.875rem 2rem;font-size:10px;text-transform:uppercase;letter-spacing:.12em;border:none;cursor:pointer;font-family:'Archivo',sans-serif}
+.btn-hero.primary{background:var(--fg);color:var(--bg)}.btn-hero.primary:hover{background:var(--brand)}
+.btn-hero.ghost{background:transparent;color:var(--fg);border:.5px solid var(--border)}.btn-hero.ghost:hover{border-color:var(--fg-muted)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;padding-top:3rem;border-top:.5px solid var(--border);margin-top:4rem}
+.hero-stat-value{font-family:'Archivo',sans-serif;font-size:2rem;font-weight:300;line-height:1}
+.hero-stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:var(--fg-soft);margin-top:.5rem}
+.hero-image{position:relative;overflow:hidden}
+.hero-image img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;filter:grayscale(8%)}
+.hero-overlay{position:absolute;bottom:0;left:0;right:0;padding:2rem 2.5rem;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.hero-name{font-family:'Archivo',sans-serif;font-size:1.5rem;font-weight:300;color:#fff}
+.hero-meta{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.6);margin-top:.25rem}
+.section{padding:5rem 3rem;border-top:.5px solid var(--border)}
+.section-label{font-size:9px;text-transform:uppercase;letter-spacing:.3em;color:var(--fg-soft);margin-bottom:1rem}
+.section-title{font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:300;letter-spacing:-.015em;margin-bottom:3rem;max-width:600px}
+.section-title strong{font-weight:650}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border-soft);border:.5px solid var(--border)}
+.how-step{background:var(--bg);padding:2.5rem 2rem}
+.how-num{font-family:'Archivo',sans-serif;font-size:2.5rem;font-weight:300;color:var(--fg);opacity:.15;margin-bottom:1.5rem}
+.how-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+.how-desc{font-size:13px;color:var(--fg-muted);line-height:1.7}
+.for-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border)}
+.for-card{background:var(--bg-alt);padding:2.5rem 3rem}
+.for-card-title{font-family:'Archivo',sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:1.5rem}
+.for-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.for-list li{font-size:13px;color:var(--fg-muted);display:flex;align-items:flex-start;gap:.75rem;line-height:1.5}
+.for-list li::before{content:'·';color:var(--brand);flex-shrink:0;font-weight:700}
+.landing-footer{padding:1.5rem 3rem;border-top:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.footer-copy{font-size:10px;color:var(--fg-soft)}
+.footer-links{display:flex;gap:2rem}
+.footer-link{font-size:10px;color:var(--fg-soft);text-decoration:none}.footer-link:hover{color:var(--fg)}
+
+/* SIDEBAR + MAIN */
+.sidebar{background:var(--bg-alt);border-right:.5px solid var(--border);padding:2rem 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;width:240px;flex-shrink:0}
+.logo{padding:0 1.5rem 2rem;border-bottom:.5px solid var(--border)}
+.logo-sub{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-soft);margin-top:.25rem}
+.user-card{padding:1.25rem 1.5rem;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:.75rem}
+.avatar{width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:.5px solid var(--border)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar-ph{width:36px;height:36px;border-radius:50%;background:var(--brand);color:#FFF;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-size:12px;font-weight:500;flex-shrink:0}
+.nav-section{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-soft);padding:1rem 1.5rem .5rem}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.5rem 1.5rem;color:var(--fg-muted);font-size:13px;cursor:pointer;border-left:2px solid transparent;transition:all .15s}
+.nav-item:hover{color:var(--fg);background:rgba(11,11,11,.03)}
+.nav-item.active{color:var(--fg);border-left-color:var(--brand);background:rgba(11,11,11,.03);font-weight:500}
+.nav-badge{margin-left:auto;background:var(--brand);color:#fff;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:500}
+.sidebar-footer{padding:1rem 1.5rem;border-top:.5px solid var(--border);font-size:9px;color:var(--fg-soft);letter-spacing:.1em;text-transform:uppercase;margin-top:auto}
+.main{padding:2rem 2.5rem;min-height:100vh;flex:1}
+.page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:.5px solid var(--border);gap:2rem}
+.page-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-soft);margin-bottom:.5rem}
+.page-title{font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:300;letter-spacing:-.02em}
+.page-desc{font-size:13px;color:var(--fg-muted);max-width:550px;margin-top:.5rem}
+.page-actions{display:flex;gap:.5rem;align-items:center}
+
+/* BUTTONS */
+.btn{padding:.5rem .875rem;font-size:10px;text-transform:uppercase;letter-spacing:.1em;border:.5px solid var(--fg);color:var(--fg);background:transparent;cursor:pointer;border-radius:2px;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;transition:all .15s}
+.btn:hover{background:var(--fg);color:var(--bg)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}.btn.primary:hover{opacity:.9}
+.btn.ghost{border-color:var(--border);color:var(--fg-muted)}.btn.ghost:hover{color:var(--fg);border-color:var(--fg-muted)}
+.btn.sm{padding:.375rem .625rem;font-size:9px}
+.btn.danger{border-color:var(--red);color:var(--red)}.btn.danger:hover{background:var(--red);color:#fff}
+.btn.back{border:none;font-size:10px;color:var(--fg-soft);padding:.25rem 0}.btn.back:hover{color:var(--fg)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat{background:#FAFAF8;border:.5px solid var(--border);padding:1.25rem;border-radius:2px}
+.stat-label{font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--fg-soft);margin-bottom:.5rem}
+.stat-value{font-family:'Archivo',sans-serif;font-size:2rem;font-weight:300;line-height:1}
+.stat-detail{font-size:10px;color:var(--fg-muted);margin-top:.5rem}
+.stat-trend{color:var(--green);font-size:9px}
+
+/* CARDS */
+.card{background:#FAFAF8;border:.5px solid var(--border);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.card-h{padding:1rem 1.25rem;border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:baseline}
+.card-t{font-family:'Archivo',sans-serif;font-size:1.125rem;font-weight:400}
+.card-b{padding:1.25rem}
+.view-all{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);cursor:pointer}
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:2rem}
+
+/* ACTIVITY */
+.act{padding:.875rem 1.25rem;border-bottom:.5px solid var(--border-soft);display:flex;gap:.75rem;align-items:flex-start}
+.dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.dot.p{background:var(--yellow)}.dot.c{background:var(--green)}.dot.a{background:var(--red)}
+.act-t{font-size:13px;margin-bottom:.125rem}.act-m{font-size:10px;color:var(--fg-soft)}
+.act-a{font-size:9px;color:var(--brand);padding:3px 8px;border:.5px solid var(--brand);border-radius:2px;text-transform:uppercase;cursor:pointer}.act-a:hover{background:var(--brand);color:#fff}
+
+/* TIMELINE */
+.tl{display:grid;grid-template-columns:70px 40px 1fr 80px;gap:.75rem;padding:.875rem 1.25rem;border-bottom:.5px solid var(--border-soft);align-items:center}
+.tl-d{font-size:9px;color:var(--fg-soft);text-transform:uppercase}
+.tl-th{width:40px;height:40px;background:var(--bg-alt);border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--fg-soft)}
+.tl-i h4{font-family:'Archivo',sans-serif;font-size:13px;font-weight:400;margin-bottom:.125rem}.tl-i .m{font-size:10px;color:var(--fg-muted)}
+.badge{display:inline-flex;padding:2px 6px;font-family:'Archivo',sans-serif;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border-radius:2px}
+.badge.a{background:rgba(74,122,82,.1);color:var(--green)}.badge.l{background:rgba(11,11,11,.05);color:var(--brand)}.badge.p{background:rgba(184,154,74,.1);color:var(--yellow)}
+
+/* PROGRESS */
+.pb{height:5px;background:var(--bg-deep);border-radius:3px;overflow:hidden}.pf{height:100%;border-radius:3px;background:var(--brand)}
+
+/* LOCK */
+.lock{background:#FAFAF8;border:.5px solid var(--border);border-left:3px solid var(--brand);border-radius:2px;padding:1.25rem;margin-bottom:1rem;display:grid;grid-template-columns:1fr 130px 160px;gap:1.25rem;align-items:center}
+.lock-b{font-family:'Archivo',sans-serif;font-size:1.125rem;font-weight:450;margin-bottom:.25rem}
+.lock-c{font-size:11px;color:var(--fg-muted);display:flex;gap:.5rem;align-items:center}
+.lock-co{font-size:10px;color:var(--fg-soft);margin-top:.375rem}
+.lock-d{font-size:10px;color:var(--fg-muted);text-align:center}
+.lock-d strong{display:block;font-family:'Archivo',sans-serif;font-size:1rem;font-weight:450;color:var(--fg)}
+.lock-p{display:flex;flex-direction:column;gap:.375rem;text-align:right}
+.lock-pl{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--fg-muted)}
+.ct{display:inline-block;font-family:'Courier New',monospace;font-size:9px;padding:2px 5px;background:var(--bg-alt);border-radius:2px;color:var(--fg-soft)}
+
+/* APPROVAL */
+.ap{background:#FAFAF8;border:.5px solid var(--border);border-radius:2px;margin-bottom:1rem;overflow:hidden}
+.ap-h{padding:1.25rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:flex-start;border-bottom:.5px solid var(--border)}
+.ap-b{font-family:'Archivo',sans-serif;font-size:1.25rem;font-weight:450;margin-bottom:.25rem}
+.ap-c{font-size:11px;color:var(--fg-muted);display:flex;align-items:center;gap:.5rem}
+.ap-dl{font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:.1em;text-align:right}
+.ap-dl strong{display:block;font-size:16px;font-family:'Archivo',sans-serif;font-weight:450;color:var(--red);margin-top:.25rem}
+.ap-body{padding:1.25rem;display:grid;grid-template-columns:160px 1fr;gap:1.25rem}
+.ap-prev{aspect-ratio:3/4;background:var(--bg-alt);border-radius:2px;overflow:hidden}.ap-prev img{width:100%;height:100%;object-fit:cover}
+.ap-det{display:flex;flex-direction:column;gap:.375rem}
+.dr{display:grid;grid-template-columns:120px 1fr;gap:.75rem;font-size:12px;padding:.375rem 0;border-bottom:.5px solid var(--border-soft)}
+.dl{color:var(--fg-muted);font-size:10px;text-transform:uppercase;letter-spacing:.1em}
+.ap-f{padding:1rem 1.25rem;border-top:.5px solid var(--border);background:var(--bg-alt);display:flex;justify-content:space-between;align-items:center}
+.ap-i{font-size:10px;color:var(--fg-muted)}
+
+/* FORM */
+.fi{width:100%;padding:.5rem .75rem;border:.5px solid var(--border);background:#FAFAF8;border-radius:2px;font-family:inherit;font-size:13px;color:var(--fg)}.fi:focus{outline:none;border-color:var(--brand)}
+.fl{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--fg-muted);margin-bottom:.5rem}
+
+/* PROFILE */
+.pg{display:grid;grid-template-columns:180px 1fr;gap:1.25rem;padding:1rem 1.25rem;border-bottom:.5px solid var(--border-soft)}
+.pl{font-size:11px;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.1em}.pv{font-size:13px}
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem}
+.rt{aspect-ratio:1;border-radius:2px;overflow:hidden;border:.5px solid var(--border)}.rt img{width:100%;height:100%;object-fit:cover}
+.md{display:flex;justify-content:space-between;padding:.375rem 0;border-bottom:.5px solid var(--border-soft);font-size:11px}.md:last-child{border-bottom:none}
+
+/* ROSTER */
+.ri{display:flex;align-items:center;gap:.75rem;padding:.625rem;margin-bottom:.375rem;background:var(--bg-alt);border-radius:2px;border:.5px solid var(--border);cursor:pointer;transition:all .15s}.ri:hover{border-color:var(--brand)}
+
+/* TALENT CARD */
+.tc{background:#FAFAF8;border:.5px solid var(--border);border-radius:2px;overflow:hidden;cursor:pointer;transition:all .15s}.tc:hover{border-color:var(--brand);transform:translateY(-2px)}
+.tc-ph{aspect-ratio:3/4;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;border-bottom:.5px solid var(--border);overflow:hidden}.tc-ph img{width:100%;height:100%;object-fit:cover}
+.tc-b{padding:.875rem}
+
+/* WIZARD */
+.ws{display:flex;gap:.375rem;margin-bottom:1.5rem}
+.wst{flex:1;text-align:center;padding:.5rem;border-radius:2px;font-size:10px;text-transform:uppercase}.wst.a{background:var(--brand);color:#fff;font-weight:600}.wst.c{background:rgba(74,122,82,.1);color:var(--green)}.wst.p{background:var(--bg-alt);color:var(--fg-soft)}
+
+/* MATRIX */
+.mx-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;padding:1rem;background:#FAFAF8;border:.5px solid var(--border);border-radius:2px}
+.mx-g{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem}
+.mx{background:#FAFAF8;border:.5px solid var(--border);padding:.75rem;border-radius:2px;cursor:pointer;transition:all .15s;position:relative}.mx:hover{border-color:var(--brand)}
+.mx-s{position:absolute;top:.75rem;right:.75rem;width:9px;height:9px;border-radius:2px}
+.mx-s.a{background:var(--green)}.mx-s.cc{background:var(--yellow)}.mx-s.p{background:var(--red)}.mx-s.u{background:var(--fg-soft)}
+.mx-code{font-size:9px;color:var(--fg-soft);font-family:'Courier New',monospace;margin-bottom:.125rem}
+.mx-name{font-family:'Archivo',sans-serif;font-size:13px;font-weight:400;margin-bottom:.125rem;padding-right:.75rem}
+.mx-desc{font-size:10px;color:var(--fg-muted);line-height:1.4}
+.fbtn{padding:5px 10px;font-size:10px;border:.5px solid var(--border);background:#FAFAF8;color:var(--fg-muted);cursor:pointer;border-radius:2px;text-transform:uppercase;font-family:inherit}.fbtn:hover,.fbtn.a{border-color:var(--brand);color:var(--brand)}
+
+.page{display:none}.page.active{display:block}
+.db{position:fixed;bottom:1rem;right:1rem;z-index:200;background:#0B0B0B;color:#FFF;display:flex;align-items:center;gap:.5rem;font-family:'Archivo',sans-serif;font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:.4rem .7rem;border-radius:2px;pointer-events:none}
+.dd{width:5px;height:5px;border-radius:50%;background:#22c55e}
+@media(max-width:1024px){.hero{grid-template-columns:1fr}.hero-image{min-height:400px;border-top:.5px solid var(--border)}.stats{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.mx-g{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.sidebar{display:none}.main{padding:1rem}.stats{grid-template-columns:1fr}.mx-g{grid-template-columns:1fr}.tl{grid-template-columns:1fr}.lock{grid-template-columns:1fr}.pg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="db"><span class="dd"></span>v05 · 3 Portales + Perfiles</div>
+
+<!-- LANDING -->
+<div class="view active" id="v-landing">
+<div class="landing">
+<nav class="landing-nav">
+<div class="logo-word" onclick="showView('v-landing')">UMAIN</div>
+<div class="nav-links">
+<a class="nav-link" href="#how">Cómo funciona</a>
+<a class="nav-link" href="#brands">Para marcas</a>
+<a class="nav-link" href="#talent">Para talento</a>
+<button class="nav-cta" onclick="showView('v-select')">Elegir portal</button>
+</div>
+</nav>
+<div class="hero">
+<div class="hero-content">
+<div class="hero-eyebrow">Gemelos digitales · Consentimiento granular · Buenos Aires · Piloto 2026</div>
+<h1 class="hero-title">Identidad real,<br><strong>licenciada</strong> con intención.</h1>
+<p class="hero-sub">UMAIN es la infraestructura de gemelos digitales del talento hispano. Las castineras aportan el roster. UMAIN aporta el rights engine: consentimiento granular, aprobación en cada uso, y trazabilidad C2PA.</p>
+<div class="hero-actions">
+<button class="btn-hero primary" onclick="showView('v-select')">Ver los portales →</button>
+<button class="btn-hero ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">Cómo funciona</button>
+</div>
+<div class="hero-stats">
+<div><div class="hero-stat-value">0</div><div class="hero-stat-label">Usos sin consentimiento</div></div>
+<div><div class="hero-stat-value">50–70%</div><div class="hero-stat-label">Del fee, talento</div></div>
+<div><div class="hero-stat-value">IAB 3.1</div><div class="hero-stat-label">Taxonomía</div></div>
+<div><div class="hero-stat-value">C2PA</div><div class="hero-stat-label">Content Credentials</div></div>
+</div>
+</div>
+<div class="hero-image">
+<img src="data:image/jpeg;base64,IMG_LIFESTYLE" alt="Manu Jantus">
+<div class="hero-overlay">
+<div class="hero-name">Manu Jantus</div>
+<div class="hero-meta">Tier A · Buenos Aires · Activa desde 2025</div>
+</div>
+</div>
+</div>
+<div id="how" class="section">
+<div class="section-label">Cómo funciona</div>
+<h2 class="section-title">Tres pilares, <strong>un sistema</strong>.</h2>
+<div class="how-grid">
+<div class="how-step"><div class="how-num">01</div><div class="how-title">Capture Protocol</div><div class="how-desc">Sesión de 45 min con video 4K multi-ángulo, fotografía guiada (40-80 tomas) y captura de voz. Identity Pack cifrado AES-256.</div></div>
+<div class="how-step"><div class="how-num">02</div><div class="how-title">Rights Engine</div><div class="how-desc">Compuerta de consentimiento, workflow de aprobación, AuditLog inmutable con cadena SHA-256 y firma ed25519.</div></div>
+<div class="how-step"><div class="how-num">03</div><div class="how-title">Generation Layer</div><div class="how-desc">Triple Pipeline: Soul ID 2.0 + GPT Image 2 / Nano Banana Pro + Seedream V5 Pro adaptativo.</div></div>
+</div>
+</div>
+<div id="brands" class="section">
+<div class="section-label">Para marcas</div>
+<h2 class="section-title">Campañas sin <strong>re-shooting</strong>.</h2>
+<div class="for-grid">
+<div class="for-card"><div class="for-card-title">Beneficios</div><ul class="for-list"><li>Extiende campañas sin volver a shootear</li><li>Trazabilidad C2PA en cada asset</li><li>Exclusividad competitiva automática</li><li>Cumplimiento legal verificado</li></ul></div>
+<div class="for-card"><div class="for-card-title">Proceso</div><ul class="for-list"><li>Seleccioná el talento del roster</li><li>Definí territorio, período y output</li><li>El talento aprueba cada uso</li><li>UMAIN genera via Triple Pipeline</li></ul></div>
+</div>
+</div>
+<div id="talent" class="section">
+<div class="section-label">Para talento</div>
+<h2 class="section-title">Tu identidad, <strong>tus reglas</strong>.</h2>
+<div class="for-grid">
+<div class="for-card"><div class="for-card-title">Control total</div><ul class="for-list"><li>Matriz de consentimiento por categoría IAB</li><li>Aprobás cada uso individualmente</li><li>Exclusividad competitiva automática</li><li>Regalías transparentes (65/35 split)</li></ul></div>
+<div class="for-card"><div class="for-card-title">Ingresos pasivos</div><ul class="for-list"><li>Tu gemelo digital trabaja 24/7</li><li>Múltiples campañas simultáneas</li><li>Reportes trimestrales auditables</li><li>Mínimo garantizado por tier</li></ul></div>
+</div>
+</div>
+<footer class="landing-footer">
+<div class="footer-copy">© 2026 UMAIN · Identidad real, licenciada</div>
+<div class="footer-links"><a class="footer-link">Términos</a><a class="footer-link">Privacidad</a><a class="footer-link">Contacto</a></div>
+</footer>
+</div>
+</div>
+
+<!-- PORTAL SELECTOR -->
+<div class="view" id="v-select">
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem;background:var(--bg-alt)">
+<div style="margin-bottom:1rem"><div style="font-family:'Archivo',sans-serif;font-weight:650;font-size:1.75rem;letter-spacing:.38em;text-transform:uppercase;color:var(--brand)">UMAIN</div></div>
+<h1 style="font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:300;margin-bottom:.5rem">Seleccioná tu <em>portal</em></h1>
+<p style="font-size:13px;color:var(--fg-muted);margin-bottom:3rem">Cada rol tiene su propia vista.</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:800px;width:100%">
+<div onclick="showView('v-talento')" style="background:var(--bg);border:.5px solid var(--border);border-radius:2px;padding:2rem;cursor:pointer;text-align:center">
+<div style="width:48px;height:48px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:20px">👤</div>
+<div style="font-family:'Archivo',sans-serif;font-size:1.125rem;font-weight:450;margin-bottom:.375rem">Talento</div>
+<div style="font-size:11px;color:var(--fg-muted);line-height:1.5">Identidad, consentimiento, aprobaciones, regalías.</div>
+<div style="display:inline-block;margin-top:.75rem;padding:3px 8px;font-size:9px;text-transform:uppercase;letter-spacing:.1em;border:.5px solid var(--border);border-radius:2px;color:var(--fg-soft)">Manu Jantus · Tier A</div>
+</div>
+<div onclick="showView('v-castinera')" style="background:var(--bg);border:.5px solid var(--border);border-radius:2px;padding:2rem;cursor:pointer;text-align:center">
+<div style="width:48px;height:48px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:20px">🎭</div>
+<div style="font-family:'Archivo',sans-serif;font-size:1.125rem;font-weight:450;margin-bottom:.375rem">Castinera</div>
+<div style="font-size:11px;color:var(--fg-muted);line-height:1.5">Roster, nuevos talentos, aprobaciones.</div>
+<div style="display:inline-block;margin-top:.75rem;padding:3px 8px;font-size:9px;text-transform:uppercase;letter-spacing:.1em;border:.5px solid var(--border);border-radius:2px;color:var(--fg-soft)">Casting Club · 5 talentos</div>
+</div>
+<div onclick="showView('v-agencia')" style="background:var(--bg);border:.5px solid var(--border);border-radius:2px;padding:2rem;cursor:pointer;text-align:center">
+<div style="width:48px;height:48px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:20px">🏢</div>
+<div style="font-family:'Archivo',sans-serif;font-size:1.125rem;font-weight:450;margin-bottom:.375rem">Agencia</div>
+<div style="font-size:11px;color:var(--fg-muted);line-height:1.5">Catálogo, solicitudes, campañas.</div>
+<div style="display:inline-block;margin-top:.75rem;padding:3px 8px;font-size:9px;text-transform:uppercase;letter-spacing:.1em;border:.5px solid var(--border);border-radius:2px;color:var(--fg-soft)">BBDO Buenos Aires</div>
+</div>
+</div>
+<div style="margin-top:2rem"><button class="btn ghost" onclick="showView('v-landing')">← Volver al inicio</button></div>
+</div>
+</div>
+
+<!-- PORTAL TALENTO -->
+<div class="view" id="v-talento">
+<div style="display:flex;min-height:100vh">
+<aside class="sidebar">
+<div class="logo"><div class="logo-word" onclick="showView('v-select')">UMAIN</div><div class="logo-sub">Portal Talento</div></div>
+<div class="user-card"><div class="avatar"><img src="data:image/jpeg;base64,IMG_PORTRAIT" alt="Manu"></div><div><div style="font-family:'Archivo',sans-serif;font-size:13px">Manu Jantus</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--fg-soft)">Tier A</div></div></div>
+<nav>
+<div class="nav-section">General</div>
+<a class="nav-item active" onclick="tp('t-dash')">◈ Panel</a>
+<a class="nav-item" onclick="tp('t-prof')">◈ Mi perfil</a>
+<div class="nav-section">Identidad</div>
+<a class="nav-item" onclick="tp('t-mx')">◈ Consentimiento</a>
+<a class="nav-item" onclick="tp('t-usg')">◈ Usos</a>
+<div class="nav-section">Campañas</div>
+<a class="nav-item" onclick="tp('t-apr')">◈ Aprobaciones <span class="nav-badge">3</span></a>
+<div class="nav-section">Derechos</div>
+<a class="nav-item" onclick="tp('t-lck')">◈ Exclusividades</a>
+<a class="nav-item" onclick="tp('t-ctr')">◈ Contratos</a>
+<a class="nav-item" onclick="showView('v-select')" style="margin-top:auto;padding-top:1rem;opacity:.5">← Cambiar portal</a>
+</nav>
+<div class="sidebar-footer">UMAIN v0.5.0</div>
+</aside>
+<main class="main">
+<div class="page active" id="t-dash">
+<div class="page-header"><div><div class="page-label">Panel</div><h1 class="page-title">Hola <em>Manu</em>.</h1></div></div>
+<div class="stats">
+<div class="stat"><div class="stat-label">Proyectos</div><div class="stat-value">4</div><div class="stat-detail">2 al aire</div></div>
+<div class="stat"><div class="stat-label">Regalías Q4</div><div class="stat-value">$10,712</div><div class="stat-detail"><span class="stat-trend">↑ 18%</span></div></div>
+<div class="stat"><div class="stat-label">Matriz</div><div class="stat-value">72%</div><div class="stat-detail">18 sin evaluar</div></div>
+<div class="stat"><div class="stat-label">Exclusividades</div><div class="stat-value">2</div><div class="stat-detail">L'Oréal expira Jun</div></div>
+</div>
+<div class="grid-2"><div><div class="card"><div class="card-h"><h2 class="card-t">Actividad</h2></div>
+<div class="act"><div class="dot p"></div><div style="flex:1"><div class="act-t">Nuevo: Samsung Galaxy Z Flip</div><div class="act-m">IAB-575 · LATAM · 28 abr</div></div><a class="act-a" onclick="tp('t-apr')">Revisar</a></div>
+<div class="act"><div class="dot c"></div><div style="flex:1"><div class="act-t">L'Oréal Revitalift entregada</div><div class="act-m">Activo hasta 15 Jun</div></div></div>
+<div class="act"><div class="dot a"></div><div style="flex:1"><div class="act-t">Pepsi se libera en 14 días</div><div class="act-m">Cooldown termina 24 Abr</div></div></div>
+</div></div>
+<div><div class="card"><div class="card-h"><h2 class="card-t">Consentimiento</h2></div><div style="padding:1rem 1.25rem"><div style="font-size:10px;color:var(--fg-muted);margin-bottom:.375rem">Completitud</div><div class="pb"><div class="pf" style="width:72%"></div></div><div style="font-size:11px;margin-top:.375rem">47 de 65</div></div></div></div></div>
+</div>
+<div class="page" id="t-prof">
+<div class="page-header"><div><div class="page-label">Perfil</div><h1 class="page-title">Tu <em>identidad</em>.</h1></div><div class="page-actions"><button class="btn primary sm">Guardar</button></div></div>
+<div class="grid-2"><div>
+<div class="card"><div class="card-h"><h2 class="card-t">Personal</h2></div>
+<div class="pg"><div class="pl">Nombre</div><div class="pv">Manuela Jantus</div></div>
+<div class="pg"><div class="pl">Profesional</div><div class="pv">Manu Jantus</div></div>
+<div class="pg"><div class="pl">Nacimiento</div><div class="pv">22 feb 1986</div></div>
+<div class="pg"><div class="pl">Nacionalidad</div><div class="pv">🇦🇷 Argentina</div></div>
+<div class="pg"><div class="pl">Idiomas</div><div class="pv">ES · EN · PT</div></div>
+</div>
+<div class="card"><div class="card-h"><h2 class="card-t">Representación</h2></div>
+<div class="pg"><div class="pl">Agencia</div><div class="pv">Casting Club (BA)</div></div>
+<div class="pg"><div class="pl">Contrato</div><div class="pv">Tripartito UMAIN × CC × Talento</div></div>
+</div></div>
+<div>
+<div class="card"><div class="card-h"><h2 class="card-t">Modelo digital</h2></div><div style="padding:1.25rem">
+<div style="aspect-ratio:3/4;border-radius:2px;overflow:hidden;margin-bottom:1rem;border:.5px solid var(--border)"><img src="data:image/jpeg;base64,IMG_PORTRAIT" style="width:100%;height:100%;object-fit:cover"></div>
+<div class="rg"><div class="rt"><img src="data:image/jpeg;base64,IMG_LIFESTYLE"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_CAMPAIGN"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_PROFILE"></div></div>
+<div style="font-size:9px;color:var(--fg-soft);margin-bottom:1rem">48 fotos · 2.4 GB · Mar 2026</div>
+</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Tier</h2></div><div style="padding:1.25rem;text-align:center"><div style="font-family:'Archivo',sans-serif;font-size:2.5rem;font-weight:300;color:var(--brand)">A</div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--fg-muted)">Split 65/35 · $18,000 mínimo</div></div></div>
+</div></div></div>
+<div class="page" id="t-mx">
+<div class="page-header"><div><div class="page-label">Consentimiento</div><h1 class="page-title">Por <em>categoría</em>.</h1></div><div class="page-actions"><button class="btn primary sm">Guardar y firmar</button></div></div>
+<div class="mx-h"><div style="flex:1"><div style="font-size:10px;color:var(--fg-muted);margin-bottom:.375rem">Completitud</div><div class="pb"><div class="pf" style="width:72%"></div></div><div style="font-size:11px;margin-top:.375rem">47 de 65 · 18 sin definir</div></div><div style="display:flex;gap:.375rem"><button class="fbtn a">Todas</button><button class="fbtn">Autorizadas</button><button class="fbtn">Prohibidas</button></div></div>
+<div class="mx-g">
+<div class="mx"><div class="mx-s a"></div><div class="mx-code">IAB-16</div><div class="mx-name">Moda y estilo</div><div class="mx-desc">Indumentaria, accesorios, editorial.</div></div>
+<div class="mx"><div class="mx-s a"></div><div class="mx-code">IAB-204</div><div class="mx-name">Belleza y cosmética</div><div class="mx-desc">Maquillaje, skincare, fragancias.</div></div>
+<div class="mx"><div class="mx-s cc"></div><div class="mx-code">IAB-9</div><div class="mx-name">Alimentos</div><div class="mx-desc">Alimentos y bebidas sin alcohol.</div></div>
+<div class="mx"><div class="mx-s p"></div><div class="mx-code">IAB-430</div><div class="mx-name">Alcohol</div><div class="mx-desc">Cerveza, vino, destilados.</div></div>
+<div class="mx"><div class="mx-s p"></div><div class="mx-code">GARM-H8</div><div class="mx-name">Tabaco</div><div class="mx-desc">Cigarrillos, vapeo.</div></div>
+<div class="mx"><div class="mx-s u"></div><div class="mx-code">IAB-4</div><div class="mx-name">Empleo</div><div class="mx-desc">Plataformas de empleo.</div></div>
+</div></div>
+<div class="page" id="t-usg"><div class="page-header"><div><div class="page-label">Usos</div><h1 class="page-title">Cada <em>uso</em>, registrado.</h1></div></div>
+<div class="stats"><div class="stat"><div class="stat-label">Total</div><div class="stat-value">23</div></div><div class="stat"><div class="stat-label">Activos</div><div class="stat-value">7</div></div><div class="stat"><div class="stat-label">Ingresos</div><div class="stat-value">$32,080</div></div><div class="stat"><div class="stat-label">Promedio</div><div class="stat-value">$1,395</div></div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Historial</h2></div>
+<div class="tl"><div class="tl-d">Abr 2026</div><div class="tl-th"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="5" ry="6" stroke="currentColor" stroke-width=".8"/><path d="M3 24 Q3 15 12 15 Q21 15 21 24" stroke="currentColor" stroke-width=".8" fill="none"/></svg></div><div class="tl-i"><h4>L'Oréal · Revitalift</h4><div class="m">$2,100</div></div><span class="badge a">Activo</span></div>
+<div class="tl"><div class="tl-d">Feb 2026</div><div class="tl-th"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="5" ry="6" stroke="currentColor" stroke-width=".8"/><path d="M3 24 Q3 15 12 15 Q21 15 21 24" stroke="currentColor" stroke-width=".8" fill="none"/></svg></div><div class="tl-i"><h4>Pepsi · Summer</h4><div class="m">$3,200</div></div><span class="badge l">Bloqueado</span></div>
+</div></div>
+<div class="page" id="t-apr"><div class="page-header"><div><div class="page-label">Aprobaciones</div><h1 class="page-title"><em>3 proyectos</em> esperando.</h1></div></div>
+<div class="ap"><div class="ap-h"><div><div class="ap-b">Samsung Galaxy Z Flip 7</div><div class="ap-c"><span class="ct">IAB-575</span>Smartphones · LATAM</div></div><div class="ap-dl">Fecha límite<strong>28 abr</strong></div></div>
+<div class="ap-body"><div class="ap-prev"><img src="data:image/jpeg;base64,IMG_CAMPAIGN"></div><div class="ap-det"><div class="dr"><div class="dl">Cliente</div><div>Samsung · BBDO</div></div><div class="dr"><div class="dl">Fee</div><div>$8,500 (tu: $5,525)</div></div></div></div>
+<div class="ap-f"><div class="ap-i">⚠ Aprobar bloquea Apple, Xiaomi hasta nov 2027</div><div style="display:flex;gap:.375rem"><button class="btn danger sm">Rechazar</button><button class="btn primary sm">Aprobar</button></div></div>
+</div></div>
+<div class="page" id="t-lck"><div class="page-header"><div><div class="page-label">Exclusividades</div><h1 class="page-title">Ventanas <em>competitivas</em>.</h1></div></div>
+<div class="stats"><div class="stat"><div class="stat-label">Activas</div><div class="stat-value">2</div></div><div class="stat"><div class="stat-label">Próxima</div><div class="stat-value">8 may</div></div><div class="stat"><div class="stat-label">Bloqueadas</div><div class="stat-value">11</div></div><div class="stat"><div class="stat-label">Protegidos</div><div class="stat-value">$8,060</div></div></div>
+<div class="lock"><div><div class="lock-b">L'Oréal Paris</div><div class="lock-c"><span class="ct">IAB-186</span>Cuidado capilar</div><div class="lock-co">Bloquea: Pantene, Dove, TRESemmé</div></div><div class="lock-d"><div style="font-size:9px;text-transform:uppercase;color:var(--fg-soft)">Vence</div><strong>15 jun 2026</strong><div style="font-size:10px;color:var(--fg-muted);margin-top:.25rem">54 días</div></div><div class="lock-p"><div class="lock-pl">65%</div><div class="pb"><div class="pf" style="width:65%"></div></div></div></div>
+</div>
+<div class="page" id="t-ctr"><div class="page-header"><div><div class="page-label">Contratos</div><h1 class="page-title">Biblioteca <em>legal</em>.</h1></div></div>
+<div class="card"><div class="card-b" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:'Archivo',sans-serif;font-weight:450;font-size:13px">UMAIN × Casting Club × Manu Jantus</div><div style="font-size:10px;color:var(--fg-muted)">Tripartito · 3 años · 14 may 2025</div></div><span class="badge a">Vigente</span></div></div></div>
+</main></div></div>
+
+<!-- PORTAL CASTINERA -->
+<div class="view" id="v-castinera">
+<div style="display:flex;min-height:100vh">
+<aside class="sidebar">
+<div class="logo"><div class="logo-word" onclick="showView('v-select')">UMAIN</div><div class="logo-sub">Portal Castinera</div></div>
+<div class="user-card"><div class="avatar-ph">FL</div><div><div style="font-family:'Archivo',sans-serif;font-size:13px">Federico López</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.15em;color:var(--fg-soft)">Casting Club</div></div></div>
+<nav>
+<div class="nav-section">General</div>
+<a class="nav-item active" onclick="cp('c-dash')">◈ Dashboard</a>
+<a class="nav-item" onclick="cp('c-roster')">◈ Roster</a>
+<div class="nav-section">Gestión</div>
+<a class="nav-item" onclick="cp('c-new')">◈ Nuevo talento</a>
+<a class="nav-item" onclick="cp('c-apr')">◈ Aprobaciones <span class="nav-badge">3</span></a>
+<a class="nav-item" onclick="showView('v-select')" style="margin-top:auto;padding-top:1rem;opacity:.5">← Cambiar portal</a>
+</nav>
+<div class="sidebar-footer">UMAIN v0.5.0</div>
+</aside>
+<main class="main">
+<div class="page active" id="c-dash">
+<div class="page-header"><div><div class="page-label">Casting Club</div><h1 class="page-title">Panel de <em>representante</em>.</h1></div><div class="page-actions"><button class="btn primary sm" onclick="cp('c-new')">+ Nuevo talento</button></div></div>
+<div class="stats"><div class="stat"><div class="stat-label">Talentos</div><div class="stat-value">4</div><div class="stat-detail">5 total</div></div><div class="stat"><div class="stat-label">Proyectos</div><div class="stat-value">10</div><div class="stat-detail">Across roster</div></div><div class="stat"><div class="stat-label">Regalías</div><div class="stat-value">$26,112</div><div class="stat-detail">Comisión: $5,222</div></div><div class="stat"><div class="stat-label">Pendientes</div><div class="stat-value">3</div><div class="stat-detail"><span style="color:var(--yellow)">Atención</span></div></div></div>
+<div class="grid-2"><div><div class="card"><div class="card-h"><h2 class="card-t">Tu Roster</h2><a class="view-all" onclick="cp('c-roster')">Ver todos</a></div>
+<div style="padding:1rem 1.25rem">
+<div class="ri" onclick="cp('c-profile-mj')"><div class="avatar-ph" style="width:32px;height:32px;font-size:11px">MJ</div><div style="flex:1"><div style="font-family:'Archivo',sans-serif;font-weight:450;font-size:13px">Manu Jantus</div><div style="font-size:10px;color:var(--fg-soft)">Tier A · 4 proyectos</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:500">$10,712</div><span class="badge a">Activo</span></div></div>
+<div class="ri" onclick="cp('c-profile-lf')"><div class="avatar-ph" style="width:32px;height:32px;font-size:11px">LF</div><div style="flex:1"><div style="font-family:'Archivo',sans-serif;font-weight:450;font-size:13px">Lucía Fernández</div><div style="font-size:10px;color:var(--fg-soft)">Tier A · 3 proyectos</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:500">$8,450</div><span class="badge a">Activo</span></div></div>
+<div class="ri" onclick="cp('c-profile-ct')"><div class="avatar-ph" style="width:32px;height:32px;font-size:11px">CT</div><div style="flex:1"><div style="font-family:'Archivo',sans-serif;font-weight:450;font-size:13px">Camila Torres</div><div style="font-size:10px;color:var(--fg-soft)">Tier B · 2 proyectos</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:500">$4,200</div><span class="badge a">Activo</span></div></div>
+</div></div></div>
+<div><div class="card"><div class="card-h"><h2 class="card-t">Pendientes</h2></div>
+<div style="padding:1rem 1.25rem">
+<div class="ri"><div style="flex:1"><div style="font-size:12px;font-weight:500">Samsung Galaxy Z Flip</div><div style="font-size:10px;color:var(--fg-soft)">Manu Jantus · 28 abr</div></div></div>
+<div class="ri"><div style="flex:1"><div style="font-size:12px;font-weight:500">Nike Running</div><div style="font-size:10px;color:var(--fg-soft)">Lucía Fernández · 2 may</div></div></div>
+</div></div></div></div></div>
+<div class="page" id="c-roster"><div class="page-header"><div><div class="page-label">Roster</div><h1 class="page-title">Tus <em>talentos</em>.</h1></div><div class="page-actions"><button class="btn primary sm" onclick="cp('c-new')">+ Nuevo</button></div></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
+<div class="tc" onclick="cp('c-profile-mj')"><div class="tc-ph"><div class="avatar-ph" style="width:60px;height:60px;font-size:18px">MJ</div></div><div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Manu Jantus</div><span class="badge a">Tier A</span></div><div style="font-size:10px;color:var(--fg-soft)">4 proyectos · $10,712</div><div style="font-size:10px;color:var(--green);margin-top:.375rem">Click para ver perfil →</div></div></div>
+<div class="tc" onclick="cp('c-profile-lf')"><div class="tc-ph"><div class="avatar-ph" style="width:60px;height:60px;font-size:18px">LF</div></div><div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Lucía Fernández</div><span class="badge a">Tier A</span></div><div style="font-size:10px;color:var(--fg-soft)">3 proyectos · $8,450</div><div style="font-size:10px;color:var(--green);margin-top:.375rem">Click para ver perfil →</div></div></div>
+<div class="tc" onclick="cp('c-profile-ct')"><div class="tc-ph"><div class="avatar-ph" style="width:60px;height:60px;font-size:18px">CT</div></div><div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Camila Torres</div><span class="badge p">Tier B</span></div><div style="font-size:10px;color:var(--fg-soft)">2 proyectos · $4,200</div><div style="font-size:10px;color:var(--green);margin-top:.375rem">Click para ver perfil →</div></div></div>
+</div></div>
+<div class="page" id="c-profile-mj">
+<button class="btn back" onclick="cp('c-roster')">← Volver al roster</button>
+<div class="page-header"><div><div class="page-label">Perfil de talento</div><h1 class="page-title">Manu <em>Jantus</em></h1><p class="page-desc">Tier A · Buenos Aires · Casting Club</p></div><div class="page-actions"><button class="btn ghost sm">Editar</button><button class="btn primary sm">Nueva campaña</button></div></div>
+<div class="grid-2"><div>
+<div class="card"><div class="card-h"><h2 class="card-t">Información</h2></div>
+<div class="pg"><div class="pl">Nombre</div><div class="pv">Manuela Jantus</div></div>
+<div class="pg"><div class="pl">Nacimiento</div><div class="pv">22 feb 1986 · 🇦🇷 Argentina</div></div>
+<div class="pg"><div class="pl">Email</div><div class="pv">manu@manujantus.com</div></div>
+</div>
+<div class="card"><div class="card-h"><h2 class="card-t">Proyectos activos</h2></div>
+<div class="tl"><div class="tl-d">Abr 2026</div><div class="tl-th"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="5" ry="6" stroke="currentColor" stroke-width=".8"/><path d="M3 24 Q3 15 12 15 Q21 15 21 24" stroke="currentColor" stroke-width=".8" fill="none"/></svg></div><div class="tl-i"><h4>L'Oréal · Revitalift</h4><div class="m">LATAM · $2,100</div></div><span class="badge a">Activo</span></div>
+<div class="tl"><div class="tl-d">Feb 2026</div><div class="tl-th"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="5" ry="6" stroke="currentColor" stroke-width=".8"/><path d="M3 24 Q3 15 12 15 Q21 15 21 24" stroke="currentColor" stroke-width=".8" fill="none"/></svg></div><div class="tl-i"><h4>Pepsi · Summer</h4><div class="m">AR+BR · $3,200</div></div><span class="badge l">Bloqueado</span></div>
+</div></div>
+<div>
+<div class="card"><div class="card-h"><h2 class="card-t">Modelo digital</h2></div><div style="padding:1.25rem">
+<div style="aspect-ratio:3/4;border-radius:2px;overflow:hidden;margin-bottom:1rem;border:.5px solid var(--border)"><img src="data:image/jpeg;base64,IMG_PORTRAIT" style="width:100%;height:100%;object-fit:cover"></div>
+<div class="rg"><div class="rt"><img src="data:image/jpeg;base64,IMG_LIFESTYLE"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_CAMPAIGN"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_PROFILE"></div></div>
+<div style="font-size:9px;color:var(--fg-soft)">48 fotos · 2.4 GB · Flux LoRA + MetaHuman · v2.1</div>
+</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Estadísticas</h2></div><div style="padding:1.25rem">
+<div class="md"><span style="color:var(--fg-muted)">Regalías</span><span style="font-weight:500">$10,712</span></div>
+<div class="md"><span style="color:var(--fg-muted)">Proyectos</span><span>4 activos</span></div>
+<div class="md"><span style="color:var(--fg-muted)">Tier</span><span style="color:var(--brand);font-weight:600">A</span></div>
+</div></div>
+</div></div></div>
+<div class="page" id="c-profile-lf">
+<button class="btn back" onclick="cp('c-roster')">← Volver al roster</button>
+<div class="page-header"><div><div class="page-label">Perfil de talento</div><h1 class="page-title">Lucía <em>Fernández</em></h1><p class="page-desc">Tier A · Santiago · Casting Club</p></div></div>
+<div class="grid-2"><div>
+<div class="card"><div class="card-h"><h2 class="card-t">Información</h2></div>
+<div class="pg"><div class="pl">Nombre</div><div class="pv">Lucía Fernández</div></div>
+<div class="pg"><div class="pl">Nacimiento</div><div class="pv">15 ago 1992 · 🇨🇱 Chile</div></div>
+</div></div>
+<div>
+<div class="card"><div class="card-h"><h2 class="card-t">Modelo digital</h2></div><div style="padding:1.25rem">
+<div style="aspect-ratio:3/4;border-radius:2px;overflow:hidden;margin-bottom:1rem;border:.5px solid var(--border)"><img src="data:image/jpeg;base64,IMG_LUCIA_PORTRAIT" style="width:100%;height:100%;object-fit:cover"></div>
+<div class="rg"><div class="rt"><img src="data:image/jpeg;base64,IMG_LUCIA_LIFESTYLE"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_LUCIA_CAMPAIGN"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_LUCIA_PROFILE"></div></div>
+<div style="font-size:9px;color:var(--fg-soft)">36 fotos · 2.1 GB · Flux LoRA · v1.8</div>
+</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Estadísticas</h2></div><div style="padding:1.25rem">
+<div class="md"><span style="color:var(--fg-muted)">Regalías</span><span style="font-weight:500">$8,450</span></div>
+<div class="md"><span style="color:var(--fg-muted)">Tier</span><span style="color:var(--brand);font-weight:600">A</span></div>
+</div></div>
+</div></div></div>
+<div class="page" id="c-profile-ct">
+<button class="btn back" onclick="cp('c-roster')">← Volver al roster</button>
+<div class="page-header"><div><div class="page-label">Perfil de talento</div><h1 class="page-title">Camila <em>Torres</em></h1><p class="page-desc">Tier B · Ciudad de México · Casting Club</p></div></div>
+<div class="grid-2"><div>
+<div class="card"><div class="card-h"><h2 class="card-t">Información</h2></div>
+<div class="pg"><div class="pl">Nombre</div><div class="pv">Camila Torres</div></div>
+<div class="pg"><div class="pl">Nacimiento</div><div class="pv">3 mar 1995 · 🇲🇽 México</div></div>
+</div></div>
+<div>
+<div class="card"><div class="card-h"><h2 class="card-t">Modelo digital</h2></div><div style="padding:1.25rem">
+<div style="aspect-ratio:3/4;border-radius:2px;overflow:hidden;margin-bottom:1rem;border:.5px solid var(--border)"><img src="data:image/jpeg;base64,IMG_CAMILA_PORTRAIT" style="width:100%;height:100%;object-fit:cover"></div>
+<div class="rg"><div class="rt"><img src="data:image/jpeg;base64,IMG_CAMILA_LIFESTYLE"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_CAMILA_CAMPAIGN"></div><div class="rt"><img src="data:image/jpeg;base64,IMG_CAMILA_PROFILE"></div></div>
+<div style="font-size:9px;color:var(--fg-soft)">28 fotos · 1.8 GB · Flux LoRA · v1.5</div>
+</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Estadísticas</h2></div><div style="padding:1.25rem">
+<div class="md"><span style="color:var(--fg-muted)">Regalías</span><span style="font-weight:500">$4,200</span></div>
+<div class="md"><span style="color:var(--fg-muted)">Tier</span><span style="color:var(--brand);font-weight:600">B</span></div>
+</div></div>
+</div></div></div>
+<div class="page" id="c-new">
+<div class="page-header"><div><div class="page-label">Nuevo talento</div><h1 class="page-title">Crear <em>avatar</em>.</h1></div></div>
+<div class="ws"><div class="wst c">1. Datos</div><div class="wst a">2. Representación</div><div class="wst p">3. Config</div><div class="wst p">4. Fotos</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Representación</h2></div><div style="padding:1.25rem;display:flex;flex-direction:column;gap:1rem">
+<div><label class="fl">Agencia</label><input class="fi" value="Casting Club (Buenos Aires)" disabled style="opacity:.7"></div>
+<div><label class="fl">Split (talento / agencia)</label><div style="display:flex;gap:1rem;align-items:center"><input class="fi" type="number" value="65" style="width:80px"><span style="font-size:12px;color:var(--fg-muted)">/ 35%</span></div></div>
+</div></div></div>
+<div class="page" id="c-apr"><div class="page-header"><div><div class="page-label">Aprobaciones</div><h1 class="page-title"><em>3 pendientes</em>.</h1></div></div>
+<div class="ap"><div class="ap-h"><div><div class="ap-b">Samsung Galaxy Z Flip</div><div class="ap-c"><span class="ct">IAB-575</span>Manu Jantus · LATAM</div></div><div class="ap-dl">Fecha<strong>28 abr</strong></div></div>
+<div class="ap-body"><div class="ap-prev"><img src="data:image/jpeg;base64,IMG_CAMPAIGN"></div><div class="ap-det"><div class="dr"><div class="dl">Fee</div><div>$8,500</div></div></div></div>
+<div class="ap-f"><div class="ap-i">⚠ Bloquea Apple, Xiaomi hasta nov 2027</div><div style="display:flex;gap:.375rem"><button class="btn danger sm">Rechazar</button><button class="btn primary sm">Aprobar</button></div></div>
+</div></div>
+</main></div></div>
+
+<!-- Hidden image storage for portfolio -->
+<div style="display:none">
+  <!-- Manu Jantus -->
+  <img id="img-manu-portrait" src="data:image/jpeg;base64,IMG_PORTRAIT">
+  <img id="img-manu-lifestyle" src="data:image/jpeg;base64,IMG_LIFESTYLE">
+  <img id="img-manu-campaign" src="data:image/jpeg;base64,IMG_CAMPAIGN">
+  <img id="img-manu-profile" src="data:image/jpeg;base64,IMG_PROFILE">
+  <!-- Lucía Fernández -->
+  <img id="img-lucia-portrait" src="data:image/jpeg;base64,IMG_LUCIA_PORTRAIT">
+  <img id="img-lucia-lifestyle" src="data:image/jpeg;base64,IMG_LUCIA_LIFESTYLE">
+  <img id="img-lucia-campaign" src="data:image/jpeg;base64,IMG_LUCIA_CAMPAIGN">
+  <img id="img-lucia-profile" src="data:image/jpeg;base64,IMG_LUCIA_PROFILE">
+  <!-- Camila Torres -->
+  <img id="img-camila-portrait" src="data:image/jpeg;base64,IMG_CAMILA_PORTRAIT">
+  <img id="img-camila-lifestyle" src="data:image/jpeg;base64,IMG_CAMILA_LIFESTYLE">
+  <img id="img-camila-campaign" src="data:image/jpeg;base64,IMG_CAMILA_CAMPAIGN">
+  <img id="img-camila-profile" src="data:image/jpeg;base64,IMG_CAMILA_PROFILE">
+  <!-- Valentina Ruiz -->
+  <img id="img-valentina-portrait" src="data:image/jpeg;base64,IMG_VALENTINA_PORTRAIT">
+  <img id="img-valentina-lifestyle" src="data:image/jpeg;base64,IMG_VALENTINA_LIFESTYLE">
+  <img id="img-valentina-campaign" src="data:image/jpeg;base64,IMG_VALENTINA_CAMPAIGN">
+  <img id="img-valentina-profile" src="data:image/jpeg;base64,IMG_VALENTINA_PROFILE">
+</div>
+
+<!-- PORTAL AGENCIA -->
+<div class="view" id="v-agencia">
+<div style="min-height:100vh">
+<header style="padding:1.25rem 3rem;border-bottom:.5px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+<div style="display:flex;align-items:center;gap:2rem">
+<div><div class="logo-word" onclick="showView('v-select')" style="font-size:1.25rem">UMAIN</div><div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-soft)">Portal Agencias</div></div>
+<nav style="display:flex;gap:1.5rem">
+<a style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);font-weight:500;cursor:pointer">Catálogo</a>
+<a style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--fg-soft);cursor:pointer">Solicitudes</a>
+</nav></div>
+<div style="display:flex;align-items:center;gap:1rem"><span style="font-size:10px;color:var(--fg-soft)">BBDO Buenos Aires</span><div class="avatar-ph" style="width:28px;height:28px;font-size:10px">BB</div></div>
+</header>
+<main style="padding:2rem 3rem;max-width:1400px">
+<div id="a-catalog">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:.5px solid var(--border)">
+<div><div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-soft);margin-bottom:.375rem">Catálogo</div><h1 style="font-family:'Archivo',sans-serif;font-size:2.25rem;font-weight:300">Encontrá el <em>talento</em> ideal</h1></div>
+<button class="btn primary sm">+ Nueva solicitud</button>
+</div>
+<div style="display:flex;gap:.75rem;margin-bottom:1.25rem;padding:.75rem;background:#FAFAF8;border:.5px solid var(--border);border-radius:2px">
+<input class="fi" placeholder="Buscar talento..." style="flex:1">
+<button class="fbtn a">Todos</button><button class="fbtn">Disponibles</button><button class="fbtn">Tier A</button>
+</div>
+<div style="font-size:10px;color:var(--fg-soft);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.1em">4 talentos · Click para ver perfil completo</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem">
+<div class="tc" onclick="agProfile('Manu Jantus','A','Buenos Aires','Moda · Belleza · Lifestyle','$2,500','Disponible')">
+<div class="tc-ph"><img src="data:image/jpeg;base64,IMG_PORTRAIT" alt="Manu"></div>
+<div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Manu Jantus</div><span style="padding:2px 6px;background:var(--bg-alt);border-radius:2px;font-size:10px;font-weight:500">A</span></div><div style="font-size:10px;color:var(--fg-soft);margin-bottom:.375rem">Buenos Aires</div><div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.5rem"><span class="ct">Moda</span><span class="ct">Belleza</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:.5rem;border-top:.5px solid var(--border-soft)"><div><div style="font-family:'Archivo',sans-serif;font-size:13px;font-weight:450">$2,500</div><div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:.1em">Disponible</div></div><button class="btn primary sm">Solicitar</button></div></div></div>
+<div class="tc" onclick="agProfile('Lucía Fernández','A','Santiago','Deportes · Fitness · Tech','$2,200','Disponible')">
+<div class="tc-ph"><img src="data:image/jpeg;base64,IMG_LUCIA_PORTRAIT" alt="Lucía"></div>
+<div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Lucía Fernández</div><span style="padding:2px 6px;background:var(--bg-alt);border-radius:2px;font-size:10px;font-weight:500">A</span></div><div style="font-size:10px;color:var(--fg-soft);margin-bottom:.375rem">Santiago</div><div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.5rem"><span class="ct">Deportes</span><span class="ct">Fitness</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:.5rem;border-top:.5px solid var(--border-soft)"><div><div style="font-family:'Archivo',sans-serif;font-size:13px;font-weight:450">$2,200</div><div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:.1em">Disponible</div></div><button class="btn primary sm">Solicitar</button></div></div></div>
+<div class="tc" onclick="agProfile('Camila Torres','B','Ciudad de México','Cosmética · Lujo · Travel','$1,800','Ocupado hasta Jun')">
+<div class="tc-ph"><img src="data:image/jpeg;base64,IMG_CAMILA_PORTRAIT" alt="Camila"></div>
+<div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Camila Torres</div><span style="padding:2px 6px;background:var(--bg-alt);border-radius:2px;font-size:10px;font-weight:500">B</span></div><div style="font-size:10px;color:var(--fg-soft);margin-bottom:.375rem">Ciudad de México</div><div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.5rem"><span class="ct">Cosmética</span><span class="ct">Lujo</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:.5rem;border-top:.5px solid var(--border-soft)"><div><div style="font-family:'Archivo',sans-serif;font-size:13px;font-weight:450">$1,800</div><div style="font-size:9px;color:var(--yellow);text-transform:uppercase;letter-spacing:.1em">Ocupado</div></div><button class="btn ghost sm" disabled>No disp.</button></div></div></div>
+<div class="tc" onclick="agProfile('Valentina Ruiz','C','Montevideo','Moda · Street · Music','$900','Disponible')">
+<div class="tc-ph"><img src="data:image/jpeg;base64,IMG_VALENTINA_PORTRAIT" alt="Valentina"></div>
+<div class="tc-b"><div style="display:flex;justify-content:space-between;margin-bottom:.25rem"><div style="font-family:'Archivo',sans-serif;font-weight:450">Valentina Ruiz</div><span style="padding:2px 6px;background:var(--bg-alt);border-radius:2px;font-size:10px;font-weight:500">C</span></div><div style="font-size:10px;color:var(--fg-soft);margin-bottom:.375rem">Montevideo</div><div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.5rem"><span class="ct">Moda</span><span class="ct">Street</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:.5rem;border-top:.5px solid var(--border-soft)"><div><div style="font-family:'Archivo',sans-serif;font-size:13px;font-weight:450">$900</div><div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:.1em">Disponible</div></div><button class="btn primary sm">Solicitar</button></div></div></div>
+</div></div>
+<div id="a-profile" style="display:none">
+<button class="btn back" onclick="document.getElementById('a-catalog').style.display='block';document.getElementById('a-profile').style.display='none'">← Volver al catálogo</button>
+<div class="page-header"><div><div class="page-label">Perfil de talento</div><h1 class="page-title" id="a-prof-name">—</h1><p class="page-desc" id="a-prof-meta">—</p></div><div class="page-actions"><button class="btn primary">Solicitar este talento</button></div></div>
+<div class="grid-2"><div>
+<div class="card"><div class="card-h"><h2 class="card-t">Información</h2></div>
+<div class="pg"><div class="pl">Tier</div><div class="pv" id="a-prof-tier">—</div></div>
+<div class="pg"><div class="pl">Ubicación</div><div class="pv" id="a-prof-loc">—</div></div>
+<div class="pg"><div class="pl">Categorías</div><div class="pv" id="a-prof-cats">—</div></div>
+<div class="pg"><div class="pl">Tarifa</div><div class="pv" id="a-prof-rate">—</div></div>
+<div class="pg"><div class="pl">Disponibilidad</div><div class="pv" id="a-prof-avail">—</div></div>
+</div>
+<div class="card"><div class="card-h"><h2 class="card-t">Consentimiento</h2></div><div style="padding:1rem 1.25rem">
+<div style="font-size:10px;color:var(--fg-muted);margin-bottom:.375rem">Categorías permitidas</div>
+<div class="pb"><div class="pf" style="width:72%"></div></div>
+<div style="font-size:11px;margin-top:.375rem">47 de 65 aprobadas</div>
+<div style="display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.75rem"><span class="badge a">Moda</span><span class="badge a">Belleza</span><span class="badge a">Lifestyle</span><span class="badge p">Food</span><span class="badge l" style="background:rgba(168,74,74,.1);color:var(--red)">Alcohol</span></div>
+</div></div>
+</div>
+<div>
+<div class="card"><div class="card-h"><h2 class="card-t">Portfolio</h2></div><div style="padding:1.25rem">
+<div style="aspect-ratio:3/4;border-radius:2px;overflow:hidden;margin-bottom:1rem;border:.5px solid var(--border)"><img id="a-prof-main-img" src="data:image/jpeg;base64,IMG_PORTRAIT" style="width:100%;height:100%;object-fit:cover"></div>
+<div class="rg"><div class="rt"><img id="a-prof-lifestyle" src="data:image/jpeg;base64,IMG_LIFESTYLE"></div><div class="rt"><img id="a-prof-campaign" src="data:image/jpeg;base64,IMG_CAMPAIGN"></div><div class="rt"><img id="a-prof-side" src="data:image/jpeg;base64,IMG_PROFILE"></div></div>
+</div></div>
+<div class="card"><div class="card-h"><h2 class="card-t">Solicitar</h2></div><div style="padding:1.25rem;display:flex;flex-direction:column;gap:.75rem">
+<div><label class="fl">Campaña</label><input class="fi" placeholder="Nombre de la campaña"></div>
+<div><label class="fl">Período</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem"><input class="fi" type="date"><input class="fi" type="date"></div></div>
+<div><label class="fl">Tipo output</label><select class="fi"><option>Fotos</option><option>Video</option><option>Ambos</option></select></div>
+<button class="btn primary" style="width:100%">Enviar solicitud</button>
+</div></div>
+</div></div></div>
+</main></div></div>
+
+<script>
+function showView(id){document.querySelectorAll('.view').forEach(v=>{v.classList.remove('active');v.style.display='none'});const el=document.getElementById(id);if(el){el.classList.add('active');el.style.display='block'}window.scrollTo(0,0)}
+function tp(id){document.querySelectorAll('#v-talento .page').forEach(p=>p.classList.remove('active'));document.getElementById(id)?.classList.add('active');document.querySelectorAll('#v-talento .nav-item').forEach(n=>n.classList.remove('active'));event?.target?.classList?.add('active');window.scrollTo(0,0)}
+function cp(id){document.querySelectorAll('#v-castinera .page').forEach(p=>p.classList.remove('active'));document.getElementById(id)?.classList.add('active');document.querySelectorAll('#v-castinera .nav-item').forEach(n=>n.classList.remove('active'));event?.target?.classList?.add('active');window.scrollTo(0,0)}
+function agProfile(name,tier,loc,cats,rate,avail){
+document.getElementById('a-prof-name').innerHTML=name.split(' ')[0]+' <em>'+name.split(' ').slice(1).join(' ')+'</em>';
+document.getElementById('a-prof-meta').textContent=tier+' · '+loc+' · Disponible para campañas';
+document.getElementById('a-prof-tier').textContent=tier;
+document.getElementById('a-prof-loc').textContent=loc;
+document.getElementById('a-prof-cats').textContent=cats;
+document.getElementById('a-prof-rate').textContent=rate+'/campaña';
+document.getElementById('a-prof-avail').textContent=avail;
+
+// Map talent name to image prefix
+const nameToPrefix = {
+  'Manu Jantus': 'manu',
+  'Lucía Fernández': 'lucia',
+  'Camila Torres': 'camila',
+  'Valentina Ruiz': 'valentina'
+};
+
+const prefix = nameToPrefix[name] || 'manu';
+
+// Update portfolio images with unique images per talent
+const portraitImg = document.getElementById('img-' + prefix + '-portrait');
+const lifestyleImg = document.getElementById('img-' + prefix + '-lifestyle');
+const campaignImg = document.getElementById('img-' + prefix + '-campaign');
+const profileImg = document.getElementById('img-' + prefix + '-profile');
+
+if(portraitImg) document.getElementById('a-prof-main-img').src = portraitImg.src;
+if(lifestyleImg) document.getElementById('a-prof-lifestyle').src = lifestyleImg.src;
+if(campaignImg) document.getElementById('a-prof-campaign').src = campaignImg.src;
+if(profileImg) document.getElementById('a-prof-side').src = profileImg.src;
+
+document.getElementById('a-catalog').style.display='none';
+document.getElementById('a-profile').style.display='block';
+window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

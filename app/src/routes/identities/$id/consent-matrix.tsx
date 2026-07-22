@@ -19,11 +19,11 @@ export const Route = createFileRoute("/identities/$id/consent-matrix")({
 });
 
 const STATUS_OPTIONS: { value: ConsentStatus; label: string; color: string }[] = [
-  { value: 'permitido', label: 'Permitido', color: '#22c55e' },
-  { value: 'caso_por_caso', label: 'Caso por caso', color: '#eab308' },
-  { value: 'solo_notificar', label: 'Solo notificar', color: '#7dd4fc' },
-  { value: 'prohibido', label: 'Prohibido', color: '#ef4444' },
-  { value: 'sin_definir', label: 'Sin definir', color: '#64748b' },
+  { value: 'permitido', label: 'Autorizado', color: '#4A7A52' },
+  { value: 'caso_por_caso', label: 'Caso por caso', color: '#B89A4A' },
+  { value: 'solo_notificar', label: 'Solo notificar', color: '#4A6A8A' },
+  { value: 'prohibido', label: 'Prohibido', color: '#A84A4A' },
+  { value: 'sin_definir', label: 'Sin evaluar', color: '#7C7C7B' },
 ];
 
 function ConsentMatrixPage() {
@@ -38,6 +38,7 @@ function ConsentMatrixPage() {
         <Sidebar />
         <main className="umain-main">
           <div className="umain-empty">
+            <div className="umain-empty__icon">⚠</div>
             <div className="umain-empty__text">Talento no encontrado</div>
           </div>
         </main>
@@ -61,93 +62,121 @@ function ConsentMatrixPage() {
     sin_definir: Object.values(entries).filter(v => !v || v === 'sin_definir').length,
   };
 
+  const totalEvaluated = counts.permitido + counts.caso_por_caso + counts.solo_notificar + counts.prohibido;
+  const completionPercent = Math.round((totalEvaluated / IAB_CATEGORIES.length) * 100);
+
   return (
     <div className="umain-layout">
       <Sidebar />
-      <main className="umain-main">
-        <div className="umain-page-header" style={{marginBottom:'1rem'}}>
+      <main className="umain-main" style={{ maxWidth: '1200px' }}>
+        {/* Header */}
+        <div className="umain-page-header">
           <div>
-            <Link to={`/identities/$id`} params={{id: identity.id}} className="formula-text" style={{color:'var(--color-umain-accent)', textDecoration:'none', fontSize:'0.75rem'}}>
+            <Link 
+              to={`/identities/$id`} 
+              params={{ id: identity.id }} 
+              style={{ 
+                color: 'var(--color-umain-brand)', 
+                textDecoration: 'none', 
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em'
+              }}
+            >
               ← {identity.nombre}
             </Link>
-            <h1 style={{marginTop:'0.25rem'}}>Matriz de Consentimiento</h1>
-            <p className="formula-text mt-1">65 categorias IAB - {consent ? `v${consent.version}` : 'nueva configuración'}</p>
+            <div className="umain-page-label" style={{ marginTop: '0.5rem' }}>Matriz de consentimiento</div>
+            <h1>Tus preferencias por <em>categoría</em>.</h1>
+            <p className="umain-page-description">
+              Definí con qué categorías de producto querés trabajar. Cada uso licenciado respeta estas preferencias. 
+              Cumple con IAB Content Taxonomy 3.1.
+            </p>
+          </div>
+          <div className="umain-page-header__actions">
+            <button className="umain-button-ghost umain-button-sm">Wizard de onboarding</button>
+            <button className="umain-button-primary umain-button-sm">Guardar y firmar</button>
           </div>
         </div>
 
-        {/* Summary bar */}
-        <div className="wireframe-box" style={{padding:'1rem', marginBottom:'1.5rem'}}>
-          <div style={{display:'flex', gap:'1.5rem', flexWrap:'wrap', alignItems:'center'}}>
-            {STATUS_OPTIONS.map(opt => (
-              <div key={opt.value} style={{display:'flex', alignItems:'center', gap:'0.375rem'}}>
-                <span style={{width:8, height:8, borderRadius:'50%', background:opt.color}}></span>
-                <span className="formula-text" style={{fontSize:'0.75rem'}}>{opt.label}: <strong style={{color:opt.color}}>{counts[opt.value]}</strong></span>
-              </div>
-            ))}
-            <div style={{marginLeft:'auto', display:'flex', gap:'0.5rem'}}>
-              <select className="umain-input" style={{width:'auto', padding:'0.375rem 0.75rem', fontSize:'0.75rem'}}
-                value={filter} onChange={(e) => setFilter(e.target.value)}>
-                <option value="todas">Todas las categorias</option>
-                {STATUS_OPTIONS.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <button className="umain-button-primary" style={{fontSize:'0.75rem'}}>Guardar matriz</button>
+        {/* Progress + Filters */}
+        <div className="umain-matrix-header">
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '11px', color: 'var(--color-umain-text-secondary)', marginBottom: '0.5rem' }}>
+              Completitud de la matriz
+            </div>
+            <div className="umain-progress">
+              <div className="umain-progress__bar" style={{ width: `${completionPercent}%` }} />
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--color-umain-text)', marginTop: '0.5rem' }}>
+              {totalEvaluated} de {IAB_CATEGORIES.length} categorías evaluadas · {counts.sin_definir} sin definir
             </div>
           </div>
+          <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '2rem' }}>
+            <button 
+              className={`umain-filter-btn ${filter === 'todas' ? 'umain-filter-btn--active' : ''}`}
+              onClick={() => setFilter('todas')}
+            >
+              Todas
+            </button>
+            <button 
+              className={`umain-filter-btn ${filter === 'permitido' ? 'umain-filter-btn--active' : ''}`}
+              onClick={() => setFilter('permitido')}
+            >
+              Autorizadas
+            </button>
+            <button 
+              className={`umain-filter-btn ${filter === 'caso_por_caso' ? 'umain-filter-btn--active' : ''}`}
+              onClick={() => setFilter('caso_por_caso')}
+            >
+              Caso por caso
+            </button>
+            <button 
+              className={`umain-filter-btn ${filter === 'prohibido' ? 'umain-filter-btn--active' : ''}`}
+              onClick={() => setFilter('prohibido')}
+            >
+              Prohibidas
+            </button>
+            <button 
+              className={`umain-filter-btn ${filter === 'sin_definir' ? 'umain-filter-btn--active' : ''}`}
+              onClick={() => setFilter('sin_definir')}
+            >
+              Sin definir
+            </button>
+          </div>
         </div>
 
-        {/* Categories grid */}
-        <div className="umain-card">
-          <div className="umain-card__body" style={{padding:0}}>
-            <table className="umain-table">
-              <thead>
-                <tr>
-                  <th style={{width:'50px'}}>#</th>
-                  <th>Categoria IAB</th>
-                  <th style={{width:'300px'}}>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((cat, i) => (
-                  <tr key={cat.id}>
-                    <td><span className="formula-text" style={{fontSize:'0.75rem', color:'var(--color-umain-text-dim)'}}>{i + 1}</span></td>
-                    <td>
-                      <span className="formula-text" style={{fontSize:'0.75rem', color:'var(--color-umain-text-dim)'}}>{cat.id}</span>
-                      <span style={{display:'block', fontSize:'0.875rem', marginTop:'0.125rem'}}>{cat.nombre}</span>
-                    </td>
-                    <td>
-                      <div style={{display:'flex', gap:'0.375rem', flexWrap:'wrap'}}>
-                        {STATUS_OPTIONS.map(opt => {
-                          const current = entries[cat.id] || 'sin_definir';
-                          const isSelected = current === opt.value;
-                          return (
-                            <button
-                              key={opt.value}
-                              onClick={() => setCategoryStatus(cat.id, opt.value)}
-                              style={{
-                                padding: '0.25rem 0.625rem',
-                                fontSize: '0.6875rem',
-                                fontFamily: "'Geist Mono', monospace",
-                                borderRadius: '999px',
-                                border: isSelected ? `1.5px solid ${opt.color}` : '1px solid var(--color-umain-border)',
-                                background: isSelected ? `${opt.color}20` : 'transparent',
-                                color: isSelected ? opt.color : 'var(--color-umain-text-dim)',
-                                cursor: 'pointer',
-                                transition: 'all 0.15s',
-                              }}
-                            >
-                              {opt.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {/* Legend */}
+        <div className="umain-matrix-legend">
+          {STATUS_OPTIONS.map(opt => (
+            <div key={opt.value} className="umain-legend-item">
+              <span className="umain-legend-dot" style={{ background: opt.color }} />
+              <span>{opt.label} ({counts[opt.value]})</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Categories Grid */}
+        <div className="umain-matrix-grid">
+          {filtered.map((cat) => {
+            const current = entries[cat.id] || 'sin_definir';
+            const statusOption = STATUS_OPTIONS.find(o => o.value === current);
+            
+            return (
+              <div key={cat.id} className="umain-matrix-category" onClick={() => {
+                // Cycle through statuses on click
+                const currentIndex = STATUS_OPTIONS.findIndex(o => o.value === current);
+                const nextIndex = (currentIndex + 1) % STATUS_OPTIONS.length;
+                setCategoryStatus(cat.id, STATUS_OPTIONS[nextIndex].value);
+              }}>
+                <div 
+                  className={`umain-category-state umain-category-state--${current === 'permitido' ? 'allowed' : current === 'caso_por_caso' ? 'case-by-case' : current === 'solo_notificar' ? 'notify' : current === 'prohibido' ? 'prohibited' : 'unset'}`}
+                />
+                <div className="umain-category-code">{cat.id}</div>
+                <div className="umain-category-name">{cat.nombre}</div>
+                <div className="umain-category-description">{cat.desc}</div>
+              </div>
+            );
+          })}
         </div>
       </main>
     </div>
