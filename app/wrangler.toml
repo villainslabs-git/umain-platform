@@ -11,6 +11,6 @@ not_found_handling = "none"
 [[d1_databases]]
 binding = "DB"
 database_name = "umain-db"
-database_id = "placeholder-will-be-set-via-dashboard"
+database_id = "319d4ace-e9c5-4575-9041-024a2967de2d"
 
 # Se eliminó la sección de [[r2_buckets]] para evitar el cobro/activación de R2
