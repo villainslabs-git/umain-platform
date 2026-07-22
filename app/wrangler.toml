@@ -10,8 +10,8 @@ not_found_handling = "none"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "umain-db"
-database_id = "319d4ace-e9c5-4575-9041-024a2967de2d"
+database_name = "umain-platform"
+database_id = "6bb4bfd3-b8dc-413f-9908-011307f3f3e0"
 
 pages_build_output_dir = "dist"
 
