@@ -38,6 +38,15 @@ export interface ConsentGateResponse {
   audit_log_seq?: number;
 }
 
+interface AuditEntry {
+  seq: number;
+  evento: string;
+  hash_prev: string;
+  hash: string;
+  payload: string;
+  firma: string;
+}
+
 // ============================================================
 // HELPERS PRIVADOS
 // ============================================================
@@ -175,7 +184,7 @@ async function validateExclusivity(identityId: string, marca: string, categoriaI
     WHERE identity_id = ${identityId}
     AND vencimiento > datetime('now')
     ORDER BY vencimiento DESC`.all();
-  const locks = locksResult.results ?? [];
+  const locks = (locksResult.results ?? []) as Record<string, any>[];
 
   if (!locks || locks.length === 0) return { passed: true, detalle: `Sin locks activos para ${identityId}` };
 
@@ -263,26 +272,26 @@ export const executeConsentGate = createServerFn({ method: "POST" })
     const r1 = await validateToken(license, identity, d);
     steps.push({ paso: 1, nombre: 'Validar token JWT', passed: r1.passed, detalle: r1.detalle });
     pasos[0] = r1.passed;
-    if (!r1.passed) { errors.push(r1.detalle); return buildResponse(steps, errors, warnings, 1, startTime, pasos, data); }
+    if (!r1.passed) { errors.push(r1.detalle); return await buildResponse(steps, errors, warnings, 1, startTime, pasos, data); }
 
     // --- PASO 2 ---
     const r2 = validateScope(license, data);
     steps.push({ paso: 2, nombre: 'Validar alcance', passed: r2.passed, detalle: r2.detalle });
     pasos[1] = r2.passed;
-    if (!r2.passed) { errors.push(r2.detalle); return buildResponse(steps, errors, warnings, 2, startTime, pasos, data); }
+    if (!r2.passed) { errors.push(r2.detalle); return await buildResponse(steps, errors, warnings, 2, startTime, pasos, data); }
 
     // --- PASO 3 ---
     const r3 = await validateConsentMatrix(data.identity_id, data.categoria_iab, d);
     steps.push({ paso: 3, nombre: 'Validar matriz de consentimiento', passed: r3.passed, detalle: r3.detalle });
     pasos[2] = r3.passed;
     if (r3.warnings) warnings.push(...r3.warnings);
-    if (!r3.passed) { errors.push(r3.detalle); return buildResponse(steps, errors, warnings, 3, startTime, pasos, data); }
+    if (!r3.passed) { errors.push(r3.detalle); return await buildResponse(steps, errors, warnings, 3, startTime, pasos, data); }
 
     // --- PASO 4 ---
     const r4 = await validateExclusivity(data.identity_id, data.marca, data.categoria_iab, data.territorio, d);
     steps.push({ paso: 4, nombre: 'Validar exclusividad', passed: r4.passed, detalle: r4.detalle });
     pasos[3] = r4.passed;
-    if (!r4.passed) { errors.push(r4.detalle); return buildResponse(steps, errors, warnings, 4, startTime, pasos, data); }
+    if (!r4.passed) { errors.push(r4.detalle); return await buildResponse(steps, errors, warnings, 4, startTime, pasos, data); }
 
     // --- PASO 5: AuditLog ---
     pasos[4] = true;
@@ -298,7 +307,7 @@ export const executeConsentGate = createServerFn({ method: "POST" })
       detalle: auditSeq ? `AuditLog entry #${auditSeq} registrado` : 'AuditLog registrado (seq no disponible)',
     });
 
-    return buildResponse(steps, errors, warnings, undefined, startTime, pasos, data, undefined, auditSeq ?? undefined);
+    return await buildResponse(steps, errors, warnings, undefined, startTime, pasos, data, undefined, auditSeq ?? undefined);
   });
 
 // ============================================================
@@ -306,7 +315,7 @@ export const executeConsentGate = createServerFn({ method: "POST" })
 // ============================================================
 export const authorizeGeneration = createServerFn({ method: "POST" })
   .validator((data: ConsentGateRequest) => data)
-  .handler(async ({ data }): Promise<ConsentGateResponse & { job_id: string }> => {
+  .handler(async ({ data }): Promise<ConsentGateResponse & { job_id?: string }> => {
     const startTime = Date.now();
     const d = getDB();
     const steps: ValidationStep[] = [];
@@ -386,7 +395,7 @@ export const authorizeGeneration = createServerFn({ method: "POST" })
 export const verifyAuditChain = createServerFn({ method: "GET" }).handler(async () => {
   const d = getDB();
   const entriesResult = await d.sql`SELECT seq, evento, hash_prev, hash, payload, firma FROM audit_log ORDER BY seq ASC`.all();
-  const entries = entriesResult.results ?? [];
+  const entries = (entriesResult.results ?? []) as unknown as AuditEntry[];
 
   const results: { seq: number; status: string; hash_match: boolean; chain_match: boolean }[] = [];
   let previousHash = '0000000000000000000000000000000000000000000000000000000000000000';

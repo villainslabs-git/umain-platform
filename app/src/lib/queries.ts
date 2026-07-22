@@ -15,7 +15,7 @@ function db() {
 export const getProviders = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM providers ORDER BY created_at ASC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 export const saveProvider = createServerFn({ method: "POST" })
@@ -36,7 +36,7 @@ export const validateProvider = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const d = db();
-    const provider = await d.sql`SELECT * FROM providers WHERE id = ${data.id}`.get() as any;
+    const provider = (await d.sql`SELECT * FROM providers WHERE id = ${data.id}`.get()) as Record<string, any> | undefined;
     if (!provider) return { success: false, error: "Provider no encontrado" };
     const hasKey = provider.api_key_encrypted && provider.api_key_encrypted.length > 0;
     const status = hasKey ? 'valido' : 'error';
@@ -59,7 +59,8 @@ export const getSettings = createServerFn({ method: "GET" }).handler(async () =>
   const d = db();
   const result = await d.sql`SELECT key, value FROM system_settings`.all();
   const settings: Record<string, string> = {};
-  for (const row of result.results ?? []) settings[row.key] = row.value;
+  const rows = (result.results ?? []) as Array<{ key: string; value: string }>;
+  for (const row of rows) settings[row.key] = row.value;
   return settings;
 });
 
@@ -77,26 +78,26 @@ export const saveSetting = createServerFn({ method: "POST" })
 export const getDashboardStats = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
 
-  const identidades = await d.sql`SELECT 
+  const identidades = (await d.sql`SELECT 
     COUNT(*) as total,
     SUM(CASE WHEN estado = 'activo' THEN 1 ELSE 0 END) as activas,
     SUM(CASE WHEN estado = 'suspendido' THEN 1 ELSE 0 END) as suspendidas
-  FROM identities`.get() as any;
+  FROM identities`.get()) as Record<string, any> | undefined;
 
-  const campanias = await d.sql`SELECT 
+  const campanias = (await d.sql`SELECT 
     COUNT(*) as total,
     SUM(CASE WHEN estado = 'activa' THEN 1 ELSE 0 END) as activas
-  FROM campaigns`.get() as any;
+  FROM campaigns`.get()) as Record<string, any> | undefined;
 
-  const licencias = await d.sql`SELECT COUNT(*) as vigentes FROM licenses WHERE estado = 'vigente'`.get() as any;
+  const licencias = (await d.sql`SELECT COUNT(*) as vigentes FROM licenses WHERE estado = 'vigente'`.get()) as Record<string, any> | undefined;
   
-  const jobs = await d.sql`SELECT 
+  const jobs = (await d.sql`SELECT 
     SUM(CASE WHEN estado IN ('generando','pendiente_qa') THEN 1 ELSE 0 END) as en_curso,
     SUM(CASE WHEN estado = 'entregado' THEN 1 ELSE 0 END) as completados
-  FROM generation_jobs`.get() as any;
+  FROM generation_jobs`.get()) as Record<string, any> | undefined;
 
-  const aprobaciones = await d.sql`SELECT COUNT(*) as pendientes FROM approvals WHERE decision IS NULL`.get() as any;
-  const proveedores = await d.sql`SELECT COUNT(*) as total FROM providers WHERE activo = 1`.get() as any;
+  const aprobaciones = (await d.sql`SELECT COUNT(*) as pendientes FROM approvals WHERE decision IS NULL`.get()) as Record<string, any> | undefined;
+  const proveedores = (await d.sql`SELECT COUNT(*) as total FROM providers WHERE activo = 1`.get()) as Record<string, any> | undefined;
 
   return {
     total_identidades: Number(identidades?.total ?? 0),
@@ -119,14 +120,15 @@ export const getDashboardStats = createServerFn({ method: "GET" }).handler(async
 export const getIdentities = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM identities ORDER BY created_at DESC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 export const getIdentity = createServerFn({ method: "GET" })
   .validator((data: string) => data)
   .handler(async ({ data: id }) => {
     const d = db();
-    return await d.sql`SELECT * FROM identities WHERE id = ${id}`.get();
+    const result = await d.sql`SELECT * FROM identities WHERE id = ${id}`.get();
+    return (result ?? null) as Record<string, unknown> | null;
   });
 
 export const createIdentity = createServerFn({ method: "POST" })
@@ -159,7 +161,6 @@ export const updateIdentity = createServerFn({ method: "POST" })
   .validator((data: { id: string; nombre?: string; tier?: string; agencia_id?: string; contrato_ref?: string; contacto_aprobacion?: string }) => data)
   .handler(async ({ data }) => {
     const d = db();
-    // SQL dinamico con placeholders y bind: los valores nunca se interpolan en el string.
     const sets: string[] = [];
     const params: unknown[] = [];
     const campos: Array<[string, string | undefined]> = [
@@ -191,7 +192,8 @@ export const getConsentMatrix = createServerFn({ method: "GET" })
   .validator((data: string) => data)
   .handler(async ({ data: identityId }) => {
     const d = db();
-    return await d.sql`SELECT * FROM consent_matrices WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get();
+    const result = await d.sql`SELECT * FROM consent_matrices WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get();
+    return (result ?? null) as Record<string, unknown> | null;
   });
 
 // ============================================================
@@ -200,7 +202,7 @@ export const getConsentMatrix = createServerFn({ method: "GET" })
 export const getCampaigns = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM campaigns ORDER BY created_at DESC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 // ============================================================
@@ -213,7 +215,7 @@ export const getLicenses = createServerFn({ method: "GET" }).handler(async () =>
     LEFT JOIN identities i ON l.identity_id = i.id 
     LEFT JOIN campaigns c ON l.campaign_id = c.id 
     ORDER BY l.created_at DESC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 // ============================================================
@@ -226,7 +228,7 @@ export const getJobs = createServerFn({ method: "GET" }).handler(async () => {
     LEFT JOIN identities i ON j.identity_id = i.id
     LEFT JOIN providers p ON j.proveedor = p.id
     ORDER BY j.created_at DESC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 export const createGenerationJob = createServerFn({ method: "POST" })
@@ -245,7 +247,7 @@ export const createGenerationJob = createServerFn({ method: "POST" })
 export const getAuditLog = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM audit_log ORDER BY seq DESC LIMIT 100`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 // ============================================================
@@ -254,7 +256,7 @@ export const getAuditLog = createServerFn({ method: "GET" }).handler(async () =>
 export const getLegalDocuments = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM legal_documents ORDER BY created_at DESC`.all();
-  return result.results ?? [];
+  return (result.results ?? []) as Record<string, unknown>[];
 });
 
 // ============================================================
@@ -264,11 +266,15 @@ export const getCharacterSheet = createServerFn({ method: "GET" })
   .validator((data: string) => data)
   .handler(async ({ data: identityId }) => {
     const d = db();
-    const sheet = await d.sql`SELECT * FROM character_sheets WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get() as any;
+    const sheet = (await d.sql`SELECT * FROM character_sheets WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get()) as Record<string, any> | undefined;
     if (!sheet) return null;
     const assetsResult = await d.sql`SELECT * FROM character_assets WHERE sheet_id = ${sheet.id} ORDER BY orden ASC`.all();
     const attrsResult = await d.sql`SELECT * FROM character_attributes WHERE sheet_id = ${sheet.id} ORDER BY created_at ASC`.all();
-    return { ...sheet, assets: assetsResult.results ?? [], attributes: attrsResult.results ?? [] };
+    return { 
+      ...sheet, 
+      assets: (assetsResult.results ?? []) as Record<string, unknown>[], 
+      attributes: (attrsResult.results ?? []) as Record<string, unknown>[] 
+    };
   });
 
 export const saveCharacterSheet = createServerFn({ method: "POST" })
@@ -284,7 +290,7 @@ export const saveCharacterSheet = createServerFn({ method: "POST" })
     const d = db();
 
     // Check if a sheet already exists for this identity
-    const existing = await d.sql`SELECT id, version FROM character_sheets WHERE identity_id = ${data.identity_id} ORDER BY version DESC LIMIT 1`.get() as any;
+    const existing = (await d.sql`SELECT id, version FROM character_sheets WHERE identity_id = ${data.identity_id} ORDER BY version DESC LIMIT 1`.get()) as Record<string, any> | undefined;
 
     if (existing) {
       // Update existing sheet
@@ -342,8 +348,8 @@ export const loginUser = createServerFn({ method: "POST" })
   .validator((data: { email: string; password: string }) => data)
   .handler(async ({ data }) => {
     const d = db();
-    const user = await d.sql`SELECT * FROM users WHERE email = ${data.email} AND activo = 1`.get() as any;
+    const user = (await d.sql`SELECT * FROM users WHERE email = ${data.email} AND activo = 1`.get()) as Record<string, any> | undefined;
     if (!user) return { error: "Credenciales invalidas" };
     if (user.password_hash !== data.password) return { error: "Credenciales invalidas" };
-    return { user: { id: user.id, email: user.email, nombre: user.nombre, rol: user.rol } };
+    return { user: { id: user.id as string, email: user.email as string, nombre: user.nombre as string, rol: user.rol as string } };
   });

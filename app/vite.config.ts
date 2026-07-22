@@ -26,11 +26,7 @@ export default defineConfig(() => {
           },
         },
       }),
-      tanstackStart({
-        server: {
-          preset: "cloudflare-pages",
-        },
-      }),
+      tanstackStart(), // <-- Eliminamos la clave preset desactualizada
       react(),
       tailwindcss(),
       tsconfigPaths(),
