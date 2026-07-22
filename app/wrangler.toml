@@ -1,0 +1,13 @@
+name = "umain-platform"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist/client"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "umain-db"
+database_id = "placeholder-will-be-set-via-dashboard"
+
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "umain-storage"
