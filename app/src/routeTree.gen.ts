@@ -14,12 +14,17 @@ import { Route as LandingRouteImport } from './routes/landing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AgencyCampaignsRouteImport } from './routes/agency/campaigns'
 import { Route as AgencyCatalogRouteImport } from './routes/agency/catalog'
+import { Route as AgencyContractsRouteImport } from './routes/agency/contracts'
 import { Route as ApprovalTokenRouteImport } from './routes/approval/$token'
 import { Route as AuditLogIndexRouteImport } from './routes/audit-log/index'
 import { Route as CampaignsIndexRouteImport } from './routes/campaigns/index'
+import { Route as CastingContractsRouteImport } from './routes/casting/contracts'
 import { Route as CastingDashboardRouteImport } from './routes/casting/dashboard'
 import { Route as CastingNewTalentRouteImport } from './routes/casting/new-talent'
+import { Route as CastingReportsRouteImport } from './routes/casting/reports'
+import { Route as CastingRosterRouteImport } from './routes/casting/roster'
 import { Route as ConsentGateIndexRouteImport } from './routes/consent-gate/index'
 import { Route as ContractsIndexRouteImport } from './routes/contracts/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
@@ -34,6 +39,7 @@ import { Route as RoyaltiesIndexRouteImport } from './routes/royalties/index'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsProvidersRouteImport } from './routes/settings/providers'
 import { Route as UsageIndexRouteImport } from './routes/usage/index'
+import { Route as AgencyRequestsIndexRouteImport } from './routes/agency/requests/index'
 import { Route as AgencyRequestsNewRouteImport } from './routes/agency/requests/new'
 import { Route as IdentitiesIdIndexRouteImport } from './routes/identities/$id/index'
 import { Route as IdentitiesIdConsentMatrixRouteImport } from './routes/identities/$id/consent-matrix'
@@ -64,9 +70,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgencyCampaignsRoute = AgencyCampaignsRouteImport.update({
+  id: '/agency/campaigns',
+  path: '/agency/campaigns',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgencyCatalogRoute = AgencyCatalogRouteImport.update({
   id: '/agency/catalog',
   path: '/agency/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgencyContractsRoute = AgencyContractsRouteImport.update({
+  id: '/agency/contracts',
+  path: '/agency/contracts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApprovalTokenRoute = ApprovalTokenRouteImport.update({
@@ -84,6 +100,11 @@ const CampaignsIndexRoute = CampaignsIndexRouteImport.update({
   path: '/campaigns/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CastingContractsRoute = CastingContractsRouteImport.update({
+  id: '/casting/contracts',
+  path: '/casting/contracts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CastingDashboardRoute = CastingDashboardRouteImport.update({
   id: '/casting/dashboard',
   path: '/casting/dashboard',
@@ -92,6 +113,16 @@ const CastingDashboardRoute = CastingDashboardRouteImport.update({
 const CastingNewTalentRoute = CastingNewTalentRouteImport.update({
   id: '/casting/new-talent',
   path: '/casting/new-talent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CastingReportsRoute = CastingReportsRouteImport.update({
+  id: '/casting/reports',
+  path: '/casting/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CastingRosterRoute = CastingRosterRouteImport.update({
+  id: '/casting/roster',
+  path: '/casting/roster',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsentGateIndexRoute = ConsentGateIndexRouteImport.update({
@@ -164,6 +195,11 @@ const UsageIndexRoute = UsageIndexRouteImport.update({
   path: '/usage/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgencyRequestsIndexRoute = AgencyRequestsIndexRouteImport.update({
+  id: '/agency/requests/',
+  path: '/agency/requests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgencyRequestsNewRoute = AgencyRequestsNewRouteImport.update({
   id: '/agency/requests/new',
   path: '/agency/requests/new',
@@ -192,10 +228,15 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agency/campaigns': typeof AgencyCampaignsRoute
   '/agency/catalog': typeof AgencyCatalogRoute
+  '/agency/contracts': typeof AgencyContractsRoute
   '/approval/$token': typeof ApprovalTokenRoute
+  '/casting/contracts': typeof CastingContractsRoute
   '/casting/dashboard': typeof CastingDashboardRoute
   '/casting/new-talent': typeof CastingNewTalentRoute
+  '/casting/reports': typeof CastingReportsRoute
+  '/casting/roster': typeof CastingRosterRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/audit-log/': typeof AuditLogIndexRoute
   '/campaigns/': typeof CampaignsIndexRoute
@@ -214,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/usage/': typeof UsageIndexRoute
   '/agency/requests/new': typeof AgencyRequestsNewRoute
   '/identities/$id/consent-matrix': typeof IdentitiesIdConsentMatrixRoute
+  '/agency/requests/': typeof AgencyRequestsIndexRoute
   '/identities/$id/': typeof IdentitiesIdIndexRoute
   '/identities/$id/avatar/': typeof IdentitiesIdAvatarIndexRoute
 }
@@ -223,10 +265,15 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agency/campaigns': typeof AgencyCampaignsRoute
   '/agency/catalog': typeof AgencyCatalogRoute
+  '/agency/contracts': typeof AgencyContractsRoute
   '/approval/$token': typeof ApprovalTokenRoute
+  '/casting/contracts': typeof CastingContractsRoute
   '/casting/dashboard': typeof CastingDashboardRoute
   '/casting/new-talent': typeof CastingNewTalentRoute
+  '/casting/reports': typeof CastingReportsRoute
+  '/casting/roster': typeof CastingRosterRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/audit-log': typeof AuditLogIndexRoute
   '/campaigns': typeof CampaignsIndexRoute
@@ -245,6 +292,7 @@ export interface FileRoutesByTo {
   '/usage': typeof UsageIndexRoute
   '/agency/requests/new': typeof AgencyRequestsNewRoute
   '/identities/$id/consent-matrix': typeof IdentitiesIdConsentMatrixRoute
+  '/agency/requests': typeof AgencyRequestsIndexRoute
   '/identities/$id': typeof IdentitiesIdIndexRoute
   '/identities/$id/avatar': typeof IdentitiesIdAvatarIndexRoute
 }
@@ -255,10 +303,15 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/agency/campaigns': typeof AgencyCampaignsRoute
   '/agency/catalog': typeof AgencyCatalogRoute
+  '/agency/contracts': typeof AgencyContractsRoute
   '/approval/$token': typeof ApprovalTokenRoute
+  '/casting/contracts': typeof CastingContractsRoute
   '/casting/dashboard': typeof CastingDashboardRoute
   '/casting/new-talent': typeof CastingNewTalentRoute
+  '/casting/reports': typeof CastingReportsRoute
+  '/casting/roster': typeof CastingRosterRoute
   '/settings/providers': typeof SettingsProvidersRoute
   '/audit-log/': typeof AuditLogIndexRoute
   '/campaigns/': typeof CampaignsIndexRoute
@@ -277,6 +330,7 @@ export interface FileRoutesById {
   '/usage/': typeof UsageIndexRoute
   '/agency/requests/new': typeof AgencyRequestsNewRoute
   '/identities/$id/consent-matrix': typeof IdentitiesIdConsentMatrixRoute
+  '/agency/requests/': typeof AgencyRequestsIndexRoute
   '/identities/$id/': typeof IdentitiesIdIndexRoute
   '/identities/$id/avatar/': typeof IdentitiesIdAvatarIndexRoute
 }
@@ -288,10 +342,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/agency/campaigns'
     | '/agency/catalog'
+    | '/agency/contracts'
     | '/approval/$token'
+    | '/casting/contracts'
     | '/casting/dashboard'
     | '/casting/new-talent'
+    | '/casting/reports'
+    | '/casting/roster'
     | '/settings/providers'
     | '/audit-log/'
     | '/campaigns/'
@@ -310,6 +369,7 @@ export interface FileRouteTypes {
     | '/usage/'
     | '/agency/requests/new'
     | '/identities/$id/consent-matrix'
+    | '/agency/requests/'
     | '/identities/$id/'
     | '/identities/$id/avatar/'
   fileRoutesByTo: FileRoutesByTo
@@ -319,10 +379,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/agency/campaigns'
     | '/agency/catalog'
+    | '/agency/contracts'
     | '/approval/$token'
+    | '/casting/contracts'
     | '/casting/dashboard'
     | '/casting/new-talent'
+    | '/casting/reports'
+    | '/casting/roster'
     | '/settings/providers'
     | '/audit-log'
     | '/campaigns'
@@ -341,6 +406,7 @@ export interface FileRouteTypes {
     | '/usage'
     | '/agency/requests/new'
     | '/identities/$id/consent-matrix'
+    | '/agency/requests'
     | '/identities/$id'
     | '/identities/$id/avatar'
   id:
@@ -350,10 +416,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/agency/campaigns'
     | '/agency/catalog'
+    | '/agency/contracts'
     | '/approval/$token'
+    | '/casting/contracts'
     | '/casting/dashboard'
     | '/casting/new-talent'
+    | '/casting/reports'
+    | '/casting/roster'
     | '/settings/providers'
     | '/audit-log/'
     | '/campaigns/'
@@ -372,6 +443,7 @@ export interface FileRouteTypes {
     | '/usage/'
     | '/agency/requests/new'
     | '/identities/$id/consent-matrix'
+    | '/agency/requests/'
     | '/identities/$id/'
     | '/identities/$id/avatar/'
   fileRoutesById: FileRoutesById
@@ -382,10 +454,15 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AgencyCampaignsRoute: typeof AgencyCampaignsRoute
   AgencyCatalogRoute: typeof AgencyCatalogRoute
+  AgencyContractsRoute: typeof AgencyContractsRoute
   ApprovalTokenRoute: typeof ApprovalTokenRoute
+  CastingContractsRoute: typeof CastingContractsRoute
   CastingDashboardRoute: typeof CastingDashboardRoute
   CastingNewTalentRoute: typeof CastingNewTalentRoute
+  CastingReportsRoute: typeof CastingReportsRoute
+  CastingRosterRoute: typeof CastingRosterRoute
   SettingsProvidersRoute: typeof SettingsProvidersRoute
   AuditLogIndexRoute: typeof AuditLogIndexRoute
   CampaignsIndexRoute: typeof CampaignsIndexRoute
@@ -404,6 +481,7 @@ export interface RootRouteChildren {
   UsageIndexRoute: typeof UsageIndexRoute
   AgencyRequestsNewRoute: typeof AgencyRequestsNewRoute
   IdentitiesIdConsentMatrixRoute: typeof IdentitiesIdConsentMatrixRoute
+  AgencyRequestsIndexRoute: typeof AgencyRequestsIndexRoute
   IdentitiesIdIndexRoute: typeof IdentitiesIdIndexRoute
   IdentitiesIdAvatarIndexRoute: typeof IdentitiesIdAvatarIndexRoute
 }
@@ -445,11 +523,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agency/campaigns': {
+      id: '/agency/campaigns'
+      path: '/agency/campaigns'
+      fullPath: '/agency/campaigns'
+      preLoaderRoute: typeof AgencyCampaignsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agency/catalog': {
       id: '/agency/catalog'
       path: '/agency/catalog'
       fullPath: '/agency/catalog'
       preLoaderRoute: typeof AgencyCatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agency/contracts': {
+      id: '/agency/contracts'
+      path: '/agency/contracts'
+      fullPath: '/agency/contracts'
+      preLoaderRoute: typeof AgencyContractsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/approval/$token': {
@@ -473,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampaignsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/casting/contracts': {
+      id: '/casting/contracts'
+      path: '/casting/contracts'
+      fullPath: '/casting/contracts'
+      preLoaderRoute: typeof CastingContractsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/casting/dashboard': {
       id: '/casting/dashboard'
       path: '/casting/dashboard'
@@ -485,6 +584,20 @@ declare module '@tanstack/react-router' {
       path: '/casting/new-talent'
       fullPath: '/casting/new-talent'
       preLoaderRoute: typeof CastingNewTalentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/casting/reports': {
+      id: '/casting/reports'
+      path: '/casting/reports'
+      fullPath: '/casting/reports'
+      preLoaderRoute: typeof CastingReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/casting/roster': {
+      id: '/casting/roster'
+      path: '/casting/roster'
+      fullPath: '/casting/roster'
+      preLoaderRoute: typeof CastingRosterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consent-gate/': {
@@ -585,6 +698,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agency/requests/': {
+      id: '/agency/requests/'
+      path: '/agency/requests'
+      fullPath: '/agency/requests/'
+      preLoaderRoute: typeof AgencyRequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agency/requests/new': {
       id: '/agency/requests/new'
       path: '/agency/requests/new'
@@ -622,10 +742,15 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AgencyCampaignsRoute: AgencyCampaignsRoute,
   AgencyCatalogRoute: AgencyCatalogRoute,
+  AgencyContractsRoute: AgencyContractsRoute,
   ApprovalTokenRoute: ApprovalTokenRoute,
+  CastingContractsRoute: CastingContractsRoute,
   CastingDashboardRoute: CastingDashboardRoute,
   CastingNewTalentRoute: CastingNewTalentRoute,
+  CastingReportsRoute: CastingReportsRoute,
+  CastingRosterRoute: CastingRosterRoute,
   SettingsProvidersRoute: SettingsProvidersRoute,
   AuditLogIndexRoute: AuditLogIndexRoute,
   CampaignsIndexRoute: CampaignsIndexRoute,
@@ -644,6 +769,7 @@ const rootRouteChildren: RootRouteChildren = {
   UsageIndexRoute: UsageIndexRoute,
   AgencyRequestsNewRoute: AgencyRequestsNewRoute,
   IdentitiesIdConsentMatrixRoute: IdentitiesIdConsentMatrixRoute,
+  AgencyRequestsIndexRoute: AgencyRequestsIndexRoute,
   IdentitiesIdIndexRoute: IdentitiesIdIndexRoute,
   IdentitiesIdAvatarIndexRoute: IdentitiesIdAvatarIndexRoute,
 }
