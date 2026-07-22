@@ -17,14 +17,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Typecheck
         run: bun run typecheck
 
       - name: Build
+        env:
+          HF_DESIGN_INSPECTOR: "1"
         run: bun run build
 
       - name: Deploy to Cloudflare Pages
@@ -32,5 +36,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist/client --project-name=umain-platform --branch=${{ github.ref_name }}
+          packageManager: bun
           workingDirectory: app
+          command: pages deploy dist/client --project-name=umain-platform --branch=main
