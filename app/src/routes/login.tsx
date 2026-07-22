@@ -203,7 +203,7 @@ function LoginPage() {
             textAlign: 'center',
             letterSpacing: '0.05em'
           }}>
-            Demo: admin@umain.io / demo2026
+            Demo: demo@umain.io / demo2026
           </p>
         </div>
 

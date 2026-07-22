@@ -2,6 +2,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { bindings } from "./bindings.server";
 import { withSqlTag } from "./d1-sql";
+import { verifyPassword } from "./auth.server";
 import { 
   Provider, 
   Identity, 
@@ -366,6 +367,96 @@ export const loginUser = createServerFn({ method: "POST" })
     const d = db();
     const user = (await d.sql`SELECT * FROM users WHERE email = ${data.email} AND activo = 1`.get()) as Record<string, any> | undefined;
     if (!user) return { error: "Credenciales invalidas" };
-    if (user.password_hash !== data.password) return { error: "Credenciales invalidas" };
+    const ok = await verifyPassword(data.password, String(user.password_hash ?? ""));
+    if (!ok) return { error: "Credenciales invalidas" };
+    await d.sql`UPDATE users SET ultimo_acceso = datetime('now') WHERE id = ${user.id}`.run();
     return { user: { id: user.id as string, email: user.email as string, nombre: user.nombre as string, rol: user.rol as string } };
   });
+
+// ============================================================
+// ROSTER / REPORTES / SOLICITUDES (vistas casting y agencia)
+// ============================================================
+export const getRoster = createServerFn({ method: "GET" }).handler(async () => {
+  const d = db();
+  const result = await d.sql`SELECT i.*,
+      COUNT(DISTINCT CASE WHEN l.estado = 'vigente' THEN l.id END) as licencias_vigentes,
+      COUNT(DISTINCT l.id) as licencias_totales,
+      COALESCE(SUM(CASE WHEN l.estado IN ('vigente','vencida') THEN CAST(json_extract(l.economia, '$.monto_usd') AS REAL) END), 0) as regalias_usd
+    FROM identities i
+    LEFT JOIN licenses l ON l.identity_id = i.id
+    GROUP BY i.id
+    ORDER BY i.tier ASC, i.nombre ASC`.all();
+  return (result.results ?? []) as Array<Identity & { licencias_vigentes: number; licencias_totales: number; regalias_usd: number }>;
+});
+
+export const getReports = createServerFn({ method: "GET" }).handler(async () => {
+  const d = db();
+  const porTalento = await d.sql`SELECT i.id, i.nombre, i.tier,
+      COUNT(DISTINCT l.id) as licencias,
+      COALESCE(SUM(CASE WHEN l.estado IN ('vigente','vencida') THEN CAST(json_extract(l.economia, '$.monto_usd') AS REAL) END), 0) as bruto_usd,
+      COALESCE(SUM(CASE WHEN l.estado IN ('vigente','vencida') THEN CAST(json_extract(l.economia, '$.monto_usd') AS REAL) * CAST(json_extract(l.economia, '$.split_talento') AS REAL) / 100.0 END), 0) as talento_usd
+    FROM identities i
+    LEFT JOIN licenses l ON l.identity_id = i.id
+    GROUP BY i.id
+    HAVING licencias > 0
+    ORDER BY bruto_usd DESC`.all();
+  const porCampania = await d.sql`SELECT c.id, c.nombre, c.cliente, c.estado,
+      COUNT(l.id) as licencias,
+      COALESCE(SUM(CAST(json_extract(l.economia, '$.monto_usd') AS REAL)), 0) as bruto_usd
+    FROM campaigns c
+    LEFT JOIN licenses l ON l.campaign_id = c.id
+    GROUP BY c.id
+    ORDER BY bruto_usd DESC`.all();
+  return {
+    por_talento: (porTalento.results ?? []) as Array<{ id: string; nombre: string; tier: string; licencias: number; bruto_usd: number; talento_usd: number }>,
+    por_campania: (porCampania.results ?? []) as Array<{ id: string; nombre: string; cliente: string; estado: string; licencias: number; bruto_usd: number }>,
+  };
+});
+
+export const getLicenseRequests = createServerFn({ method: "GET" }).handler(async () => {
+  const d = db();
+  const result = await d.sql`SELECT l.id, l.estado, l.alcance, l.economia, l.created_at,
+      i.nombre as talento_nombre, i.tier as talento_tier,
+      c.nombre as campania_nombre, c.cliente as campania_cliente,
+      a.decision as aprobacion_decision, a.expiracion as aprobacion_expira
+    FROM licenses l
+    JOIN identities i ON l.identity_id = i.id
+    JOIN campaigns c ON l.campaign_id = c.id
+    LEFT JOIN approvals a ON a.license_id = l.id AND a.tipo = 'licencia'
+    ORDER BY CASE l.estado WHEN 'pendiente_aprobacion' THEN 0 WHEN 'borrador' THEN 1 ELSE 2 END, l.created_at DESC`.all();
+  return (result.results ?? []) as Array<Record<string, any>>;
+});
+
+export const getAgencyCampaigns = createServerFn({ method: "GET" }).handler(async () => {
+  const d = db();
+  const result = await d.sql`SELECT c.*,
+      COUNT(DISTINCT l.id) as licencias,
+      COUNT(DISTINCT CASE WHEN l.estado = 'vigente' THEN l.id END) as licencias_vigentes,
+      GROUP_CONCAT(DISTINCT i.nombre) as talentos,
+      COALESCE(SUM(CAST(json_extract(l.economia, '$.monto_usd') AS REAL)), 0) as inversion_usd
+    FROM campaigns c
+    LEFT JOIN licenses l ON l.campaign_id = c.id
+    LEFT JOIN identities i ON l.identity_id = i.id
+    GROUP BY c.id
+    ORDER BY c.created_at DESC`.all();
+  return (result.results ?? []) as Array<Record<string, any>>;
+});
+
+export const getContractsOverview = createServerFn({ method: "GET" }).handler(async () => {
+  const d = db();
+  const marcos = await d.sql`SELECT id, nombre, tier, contrato_ref, estado, created_at
+    FROM identities WHERE contrato_ref IS NOT NULL ORDER BY nombre ASC`.all();
+  const licencias = await d.sql`SELECT l.id, l.estado, l.alcance, l.economia, l.created_at, l.updated_at,
+      i.nombre as talento_nombre, c.nombre as campania_nombre, c.cliente as campania_cliente
+    FROM licenses l
+    JOIN identities i ON l.identity_id = i.id
+    JOIN campaigns c ON l.campaign_id = c.id
+    WHERE l.estado IN ('vigente','vencida','revocada')
+    ORDER BY l.created_at DESC`.all();
+  const legales = await d.sql`SELECT * FROM legal_documents ORDER BY created_at DESC LIMIT 20`.all();
+  return {
+    marcos: (marcos.results ?? []) as Array<Record<string, any>>,
+    licencias: (licencias.results ?? []) as Array<Record<string, any>>,
+    legales: (legales.results ?? []) as Array<Record<string, any>>,
+  };
+});
