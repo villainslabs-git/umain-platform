@@ -2,6 +2,22 @@
 import { createServerFn } from "@tanstack/react-start";
 import { bindings } from "./bindings.server";
 import { withSqlTag } from "./d1-sql";
+import { 
+  Provider, 
+  Identity, 
+  Campaign, 
+  License, 
+  GenerationJob, 
+  AuditLogEntry, 
+  LegalDocument,
+  CharacterSheet,
+  CharacterAsset,
+  CharacterAttribute,
+  ConsentMatrix,
+  SystemSetting,
+  DashboardStats,
+  CharacterSheetWithAssets
+} from "./types";
 
 function db() {
   const { DB } = bindings();
@@ -15,7 +31,7 @@ function db() {
 export const getProviders = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM providers ORDER BY created_at ASC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as Provider[];
 });
 
 export const saveProvider = createServerFn({ method: "POST" })
@@ -36,7 +52,7 @@ export const validateProvider = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     const d = db();
-    const provider = (await d.sql`SELECT * FROM providers WHERE id = ${data.id}`.get()) as Record<string, any> | undefined;
+    const provider = (await d.sql`SELECT * FROM providers WHERE id = ${data.id}`.get()) as Provider | undefined;
     if (!provider) return { success: false, error: "Provider no encontrado" };
     const hasKey = provider.api_key_encrypted && provider.api_key_encrypted.length > 0;
     const status = hasKey ? 'valido' : 'error';
@@ -120,7 +136,7 @@ export const getDashboardStats = createServerFn({ method: "GET" }).handler(async
 export const getIdentities = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM identities ORDER BY created_at DESC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as Identity[];
 });
 
 export const getIdentity = createServerFn({ method: "GET" })
@@ -128,7 +144,7 @@ export const getIdentity = createServerFn({ method: "GET" })
   .handler(async ({ data: id }) => {
     const d = db();
     const result = await d.sql`SELECT * FROM identities WHERE id = ${id}`.get();
-    return (result ?? null) as Record<string, unknown> | null;
+    return (result ?? null) as Identity | null;
   });
 
 export const createIdentity = createServerFn({ method: "POST" })
@@ -193,7 +209,7 @@ export const getConsentMatrix = createServerFn({ method: "GET" })
   .handler(async ({ data: identityId }) => {
     const d = db();
     const result = await d.sql`SELECT * FROM consent_matrices WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get();
-    return (result ?? null) as Record<string, unknown> | null;
+    return (result ?? null) as ConsentMatrix | null;
   });
 
 // ============================================================
@@ -202,7 +218,7 @@ export const getConsentMatrix = createServerFn({ method: "GET" })
 export const getCampaigns = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM campaigns ORDER BY created_at DESC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as Campaign[];
 });
 
 // ============================================================
@@ -215,7 +231,7 @@ export const getLicenses = createServerFn({ method: "GET" }).handler(async () =>
     LEFT JOIN identities i ON l.identity_id = i.id 
     LEFT JOIN campaigns c ON l.campaign_id = c.id 
     ORDER BY l.created_at DESC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as License[];
 });
 
 // ============================================================
@@ -228,7 +244,7 @@ export const getJobs = createServerFn({ method: "GET" }).handler(async () => {
     LEFT JOIN identities i ON j.identity_id = i.id
     LEFT JOIN providers p ON j.proveedor = p.id
     ORDER BY j.created_at DESC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as GenerationJob[];
 });
 
 export const createGenerationJob = createServerFn({ method: "POST" })
@@ -247,7 +263,7 @@ export const createGenerationJob = createServerFn({ method: "POST" })
 export const getAuditLog = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM audit_log ORDER BY seq DESC LIMIT 100`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as AuditLogEntry[];
 });
 
 // ============================================================
@@ -256,7 +272,7 @@ export const getAuditLog = createServerFn({ method: "GET" }).handler(async () =>
 export const getLegalDocuments = createServerFn({ method: "GET" }).handler(async () => {
   const d = db();
   const result = await d.sql`SELECT * FROM legal_documents ORDER BY created_at DESC`.all();
-  return (result.results ?? []) as Record<string, unknown>[];
+  return (result.results ?? []) as LegalDocument[];
 });
 
 // ============================================================
@@ -266,14 +282,14 @@ export const getCharacterSheet = createServerFn({ method: "GET" })
   .validator((data: string) => data)
   .handler(async ({ data: identityId }) => {
     const d = db();
-    const sheet = (await d.sql`SELECT * FROM character_sheets WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get()) as Record<string, any> | undefined;
+    const sheet = (await d.sql`SELECT * FROM character_sheets WHERE identity_id = ${identityId} ORDER BY version DESC LIMIT 1`.get()) as CharacterSheet | undefined;
     if (!sheet) return null;
     const assetsResult = await d.sql`SELECT * FROM character_assets WHERE sheet_id = ${sheet.id} ORDER BY orden ASC`.all();
     const attrsResult = await d.sql`SELECT * FROM character_attributes WHERE sheet_id = ${sheet.id} ORDER BY created_at ASC`.all();
     return { 
       ...sheet, 
-      assets: (assetsResult.results ?? []) as Record<string, unknown>[], 
-      attributes: (attrsResult.results ?? []) as Record<string, unknown>[] 
+      assets: (assetsResult.results ?? []) as CharacterAsset[], 
+      attributes: (attrsResult.results ?? []) as CharacterAttribute[] 
     };
   });
 
