@@ -13,4 +13,6 @@ binding = "DB"
 database_name = "umain-db"
 database_id = "319d4ace-e9c5-4575-9041-024a2967de2d"
 
+pages_build_output_dir = "dist"
+
 # Se eliminó la sección de [[r2_buckets]] para evitar el cobro/activación de R2
