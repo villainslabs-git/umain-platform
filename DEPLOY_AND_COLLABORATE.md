@@ -83,6 +83,21 @@ deploy_website(website_id="dd02a241-61d3-41c0-9151-d8aaf1f81f75")
 
 **Tiempo estimado:** 2-5 minutos
 
+### 3.3.1 Configs de Cloudflare
+
+- `app/wrangler.toml` queda reservado para Cloudflare Pages previews/checks en PRs.
+- `app/wrangler.worker.toml` es la configuracion de produccion del Worker SSR.
+
+Para deploy manual de produccion:
+
+```bash
+cd app
+bun run deploy:worker
+# equivalente: wrangler deploy --config wrangler.worker.toml
+```
+
+No usar `wrangler deploy` pelado: tomaria la config Pages y fallaria o desplegaria el destino incorrecto.
+
 ### 3.4 Verificar Deploy
 
 ```bash

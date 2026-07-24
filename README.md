@@ -195,6 +195,10 @@ cd app && bun run typecheck
 
 # Preview del build
 cd app && bun run preview
+
+# Deploy real a Cloudflare Worker
+cd app && bun run deploy:worker
+# equivalente: wrangler deploy --config wrangler.worker.toml
 ```
 
 ---
@@ -306,6 +310,21 @@ Esto ejecuta automaticamente:
 3. `vite build` → compila cliente SSR + servidor
 4. `D1 migrations` → aplica migraciones pendientes
 5. → **Cloudflare Worker deployed** (2-5 min)
+
+### Configuracion Cloudflare
+
+El repositorio mantiene dos configuraciones separadas:
+
+- `app/wrangler.toml`: usado por la integracion Git de **Cloudflare Pages** para previews de PR. Debe conservar `pages_build_output_dir = "./dist/client"`.
+- `app/wrangler.worker.toml`: usado para el deploy real del **Cloudflare Worker SSR** con assets, D1 y R2.
+
+Para produccion, no usar `wrangler deploy` sin config. Usar:
+
+```bash
+cd app
+bun run deploy:worker
+# o: wrangler deploy --config wrangler.worker.toml
+```
 
 ### Migraciones
 

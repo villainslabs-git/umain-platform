@@ -45,6 +45,28 @@ CREATE TABLE IF NOT EXISTS model_routing (
 );
 
 -- ============================================================
+-- PIPELINE BATCHES (tabla base)
+-- ============================================================
+-- Esta migracion originalmente asumia que pipeline_batches ya existia y solo
+-- intentaba agregarle la columna config. Eso rompe una D1 limpia porque la tabla
+-- no fue creada por las migraciones previas. Creamos primero la forma legacy,
+-- sin config, y mas abajo aplicamos el ALTER aditivo original.
+CREATE TABLE IF NOT EXISTS pipeline_batches (
+    batch_id TEXT PRIMARY KEY,
+    identity_id TEXT NOT NULL,
+    character_sheet_version INTEGER,
+    status TEXT DEFAULT 'pending',
+    total_tasks INTEGER DEFAULT 0,
+    completed_tasks INTEGER DEFAULT 0,
+    failed_tasks INTEGER DEFAULT 0,
+    skipped_tasks INTEGER DEFAULT 0,
+    total_credits INTEGER DEFAULT 0,
+    started_at TEXT DEFAULT (datetime('now')),
+    completed_at TEXT,
+    FOREIGN KEY (identity_id) REFERENCES identities(id)
+);
+
+-- ============================================================
 -- TASK QUEUE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS task_queue (
@@ -73,8 +95,10 @@ CREATE TABLE IF NOT EXISTS task_queue (
 );
 
 -- ============================================================
--- PIPELINE BATCHES (ya existe, agregar columnas)
+-- PIPELINE BATCHES (columna aditiva)
 -- ============================================================
+-- Si la tabla venia de un entorno anterior, agrega config. Si la DB es limpia,
+-- la tabla base de arriba garantiza que este ALTER tenga destino.
 ALTER TABLE pipeline_batches ADD COLUMN config TEXT DEFAULT '{}';
 
 -- ============================================================
@@ -113,6 +137,7 @@ CREATE TABLE IF NOT EXISTS provider_health_log (
 CREATE INDEX IF NOT EXISTS idx_task_queue_status ON task_queue(status, priority);
 CREATE INDEX IF NOT EXISTS idx_task_queue_batch ON task_queue(batch_id);
 CREATE INDEX IF NOT EXISTS idx_task_queue_type ON task_queue(task_type);
+CREATE INDEX IF NOT EXISTS idx_pipeline_batches_identity ON pipeline_batches(identity_id);
 CREATE INDEX IF NOT EXISTS idx_routing_task ON model_routing(task_type, priority);
 CREATE INDEX IF NOT EXISTS idx_quality_results_task ON quality_results(task_id);
 CREATE INDEX IF NOT EXISTS idx_provider_health ON provider_health_log(provider_id, checked_at);
