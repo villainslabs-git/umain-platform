@@ -1,8 +1,12 @@
 name = "umain-platform"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-# Cloudflare Pages Git integration requires this field to locate the build output.
-pages_build_output_dir = "./dist/client"
+main = "dist/server/server.js"
+
+[assets]
+directory = "./dist/client"
+binding = "STATIC"
+not_found_handling = "none"
 
 [[d1_databases]]
 binding = "DB"
