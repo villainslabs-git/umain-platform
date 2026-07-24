@@ -149,6 +149,25 @@ Esto ejecuta automaticamente:
 
 **Tiempo estimado:** 2-5 minutos.
 
+#### Configuracion Cloudflare Pages vs Workers
+
+Hay dos archivos Wrangler con responsabilidades distintas:
+
+| Archivo | Uso | Nota |
+|---|---|---|
+| `app/wrangler.toml` | Previews/checks de Cloudflare Pages en PRs | Incluye `pages_build_output_dir = "./dist/client"` |
+| `app/wrangler.worker.toml` | Deploy real a Cloudflare Worker SSR | Incluye `main = "dist/server/server.js"`, `[assets]`, D1 y R2 |
+
+Para deploy manual de produccion usar siempre:
+
+```bash
+cd app
+bun run deploy:worker
+# equivalente: wrangler deploy --config wrangler.worker.toml
+```
+
+No usar `wrangler deploy` sin `--config`, porque tomaria `wrangler.toml` y Wrangler lo interpretaria como proyecto Pages.
+
 ### 3.5 Verificar el Despliegue
 
 ```bash
@@ -479,6 +498,7 @@ FROM audit_log ORDER BY seq;
 | `Could not resolve "./bindings.server"` | Import incorrecto en queries.ts | Usar `import { env } from "cloudflare:workers"` directo |
 | `ERR_MODULE_NOT_FOUND` | Paquete faltante en node_modules | Ejecutar `bun install` |
 | `Import denied in client environment` | Archivo `.server.ts` importado desde cliente | Mover logica a un archivo sin sufijo `.server` |
+| `It looks like you've run a Workers-specific command in a Pages project` | Se ejecuto `wrangler deploy` leyendo `app/wrangler.toml` de Pages | Usar `bun run deploy:worker` o `wrangler deploy --config wrangler.worker.toml` |
 
 ### 11.2 Errores en Tiempo de Ejecucion
 
